@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
@@ -14,49 +14,65 @@ import { typography } from "@/design/typography";
 
 import { cn } from "@/lib/utils";
 
+const SCROLL_THRESHOLD = 50;
+
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > SCROLL_THRESHOLD);
     };
 
     handleScroll();
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && isMobileMenuOpen) {
         setIsMobileMenuOpen(false);
+        menuButtonRef.current?.focus();
       }
     };
 
     window.addEventListener("keydown", handleEscape);
 
     return () => window.removeEventListener("keydown", handleEscape);
-  }, []);
+  }, [isMobileMenuOpen]);
+
+  // Lock body scroll while the mobile drawer is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      const previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+
+      return () => {
+        document.body.style.overflow = previousOverflow;
+      };
+    }
+  }, [isMobileMenuOpen]);
 
   const closeMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 h-20 transition-all duration-300",
+        "sticky top-0 z-50 h-20 border-b transition-colors duration-200 ease-out",
         isScrolled
-          ? "bg-white shadow-sm"
-          : "bg-transparent"
+          ? "border-border bg-white/95 shadow-[0_1px_2px_rgba(15,23,42,0.06)] backdrop-saturate-150"
+          : "border-transparent bg-transparent"
       )}
     >
       <div
         className={cn(
           layout.container,
-          "flex h-full items-center justify-between"
+          "grid h-full grid-cols-[auto_1fr_auto] items-center gap-6 lg:grid-cols-3"
         )}
       >
         {/* Logo */}
@@ -65,7 +81,7 @@ export function Navigation() {
           className={cn(
             typography.h4,
             colors.heading,
-            "transition-opacity hover:opacity-80"
+            "justify-self-start rounded-sm tracking-tight transition-opacity duration-200 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
           )}
         >
           {company.name}
@@ -74,16 +90,16 @@ export function Navigation() {
         {/* Desktop Navigation */}
         <nav
           aria-label="Main navigation"
-          className="hidden items-center gap-8 lg:flex"
+          className="hidden justify-self-center lg:flex lg:items-center lg:gap-10"
         >
           {navigation.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                typography.button,
-                colors.heading,
-                "transition-colors hover:text-primary focus:outline-none focus:text-primary"
+                "font-[family-name:var(--font-inter)] text-[15px] font-medium",
+                colors.body,
+                "rounded-sm transition-colors duration-200 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
               )}
             >
               {item.label}
@@ -92,14 +108,13 @@ export function Navigation() {
         </nav>
 
         {/* Desktop CTA */}
-        <div className="hidden lg:block">
-          <Button>
-            Get a Quote
-          </Button>
+        <div className="hidden justify-self-end lg:block">
+          <Button>Get Free Quote</Button>
         </div>
 
         {/* Mobile Toggle */}
         <button
+          ref={menuButtonRef}
           type="button"
           aria-label={
             isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"
@@ -108,53 +123,64 @@ export function Navigation() {
           aria-expanded={isMobileMenuOpen}
           onClick={() => setIsMobileMenuOpen((prev) => !prev)}
           className={cn(
-            "inline-flex h-11 w-11 items-center justify-center rounded-xl transition-colors",
-            "focus:outline-none focus:ring-2 focus:ring-primary/20",
+            "col-start-3 inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-xl transition-colors duration-200",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
             "hover:bg-surface lg:hidden"
           )}
         >
           {isMobileMenuOpen ? (
-            <X className="h-6 w-6" />
+            <X className="h-6 w-6" aria-hidden="true" />
           ) : (
-            <Menu className="h-6 w-6" />
+            <Menu className="h-6 w-6" aria-hidden="true" />
           )}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Scrim */}
+      <div
+        aria-hidden="true"
+        onClick={closeMenu}
+        className={cn(
+          "fixed inset-0 top-20 bg-secondary/20 transition-opacity duration-200 lg:hidden",
+          isMobileMenuOpen
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
+        )}
+      />
+
+      {/* Mobile Menu (side drawer) */}
       <div
         id="mobile-navigation"
         className={cn(
-          "overflow-hidden transition-all duration-300 lg:hidden",
-          isMobileMenuOpen
-            ? "max-h-screen border-t border-border bg-white shadow-sm"
-            : "max-h-0"
+          "fixed inset-y-0 right-0 top-20 z-50 h-[calc(100vh-5rem)] w-full max-w-xs",
+          "border-l border-border bg-white shadow-[-4px_0_16px_rgba(15,23,42,0.08)]",
+          "transition-transform duration-200 ease-out lg:hidden",
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         <nav
           aria-label="Mobile navigation"
-          className={cn(layout.container, "flex flex-col py-6")}
+          className="flex h-full flex-col px-6 py-8"
         >
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={closeMenu}
-              className={cn(
-                typography.button,
-                colors.heading,
-                "rounded-lg py-3 transition-colors hover:text-primary focus:outline-none focus:text-primary"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
+          <div className="flex flex-col gap-1">
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={closeMenu}
+                className={cn(
+                  "font-[family-name:var(--font-inter)] text-base font-medium",
+                  colors.heading,
+                  "rounded-lg px-2 py-3 transition-colors duration-200 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
 
-          <Button
-            className="mt-6 w-full"
-            onClick={closeMenu}
-          >
-            Get a Quote
+          <Button className="mt-8 w-full" onClick={closeMenu}>
+            Get Free Quote
           </Button>
         </nav>
       </div>

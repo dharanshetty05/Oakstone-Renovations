@@ -2,147 +2,105 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import {
-  CircleCheck,
-  Hammer,
-  ShieldCheck,
-  Users,
-} from "lucide-react";
-
 import { layout } from "@/design/layout";
 import { typography } from "@/design/typography";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
-const trustBadges = [
-  {
-    icon: Hammer,
-    label: "15+ Years Experience",
-  },
-  {
-    icon: ShieldCheck,
-    label: "Fully Insured",
-  },
-  {
-    icon: Users,
-    label: "120+ Happy Homeowners",
-  },
-  {
-    icon: CircleCheck,
-    label: "Free Consultation",
-  },
-];
-
-const fadeUp = {
-  initial: {
-    opacity: 0,
-    y: 20,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-  },
-  transition: {
-    duration: 0.6,
-    ease: "easeOut" as const,
-  },
-};
-
-const fadeIn = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    opacity: 1,
-  },
-  transition: {
-    duration: 0.8,
-    ease: "easeOut" as const,
-  },
-};
-
 export function Hero() {
   return (
     <section
       aria-labelledby="hero-heading"
-      className={cn("bg-white", layout.sectionLarge)}
+      className="relative flex min-h-[560px] items-center overflow-hidden md:min-h-[620px] xl:min-h-[700px]"
     >
-      <div className={layout.container}>
-        <div className="grid min-h-[700px] items-center gap-12 lg:grid-cols-[45%_55%]">
+      {/* Background */}
+      <motion.div
+        className="absolute inset-0 z-0"
+        initial={{ opacity: 0, scale: 1.04 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          duration: 1.4,
+          ease: "easeOut",
+        }}
+      >
+        <Image
+          src="/images/hero-bg.png"
+          alt="Renovated kitchen with warm wood cabinetry and natural light"
+          fill
+          priority
+          quality={90}
+          sizes="100vw"
+          draggable={false}
+          className="object-cover object-center"
+        />
+
+        {/* Global subtle overlay */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-black/15"
+        />
+
+        {/* Localized content overlay */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-y-0 left-0 w-[58%] bg-gradient-to-r from-black/72 via-black/45 via-45% to-transparent"
+        />
+      </motion.div>
+
+      {/* Content */}
+      <div className={cn(layout.container, "relative z-20")}>
+        <div className={cn(layout.content, "space-y-9")}>
+          {/* Heading */}
           <motion.div
-            {...fadeUp}
-            className={cn(layout.content, "space-y-8")}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.55,
+              delay: 0.2,
+              ease: "easeOut",
+            }}
+            className="space-y-5"
           >
-            <div className={layout.gapContent}>
-              <p className={typography.eyebrow}>
-                Trusted Home Renovation Specialists
-              </p>
+            <h1 id="hero-heading" className={cn(typography.h2, "max-w-[590px] text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.35)]")}>
+              Transform Your Home with Beautiful Renovations Built to Last.
+            </h1>
 
-              <h1
-                id="hero-heading"
-                className={typography.h1}
-              >
-                Transform Your Home with Beautiful
-                Renovations Built to Last.
-              </h1>
-
-              <p className={typography.bodyLg}>
-                From modern kitchens and luxury bathrooms
-                to complete home renovations, we create
-                thoughtfully designed spaces with
-                exceptional craftsmanship, transparent
-                pricing, and a renovation experience you
-                can trust.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <Button size="large">
-                Get Free Quote
-              </Button>
-
-              <Button
-                variant="secondary"
-                size="large"
-              >
-                View Projects
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 pt-2">
-              {trustBadges.map(
-                ({ icon: Icon, label }) => (
-                  <div
-                    key={label}
-                    className="flex items-center gap-3"
-                  >
-                    <Icon
-                      size={20}
-                      className="shrink-0 text-primary"
-                      aria-hidden="true"
-                    />
-
-                    <span className={typography.small}>
-                      {label}
-                    </span>
-                  </div>
-                )
-              )}
-            </div>
+            <p className={cn(typography.small, "max-w-[540px] text-white/85 [text-shadow:0_2px_8px_rgba(0,0,0,0.35)]")}>
+              From modern kitchens and luxury bathrooms to complete home
+              renovations, we create thoughtfully designed spaces with
+              exceptional craftsmanship, transparent pricing, and a renovation
+              experience you can trust.
+            </p>
           </motion.div>
 
+          {/* CTA Buttons */}
           <motion.div
-            {...fadeIn}
-            className="relative min-h-[420px] overflow-hidden rounded-3xl shadow-xl lg:h-full"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.55,
+              delay: 0.35,
+              ease: "easeOut",
+            }}
+            className="flex flex-col gap-4 sm:flex-row sm:items-center"
           >
-            <Image
-              src="/images/hero-placeholder.png"
-              alt="Modern Irish home after a premium renovation with contemporary architecture and landscaping."
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 55vw"
-              className="object-cover"
-            />
+            <motion.div
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button size="large" className="shadow-lg shadow-black/10 transition-all duration-200 hover:shadow-xl">
+                Get Free Quote
+              </Button>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button variant="secondary" size="large" className="border-2 border-white bg-white shadow-lg shadow-black/25 transition-all duration-200 hover:shadow-xl">
+                View Projects
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
       </div>
