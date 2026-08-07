@@ -12,7 +12,7 @@ import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
 export default function HomePage() {
   return (
     <>
-      <Navigation />
+      {/* <Navigation /> */}
 
       <main>
         <Hero />
