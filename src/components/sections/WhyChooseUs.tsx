@@ -41,7 +41,7 @@ export function WhyChooseUs() {
     <section
       id="why-choose-us"
       aria-labelledby="why-choose-us-heading"
-      className="overflow-hidden bg-background"
+      className="bg-amber-50 overflow-hidden"
     >
       <div className={cn(layout.container, layout.section)}>
         <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16 xl:gap-20">
