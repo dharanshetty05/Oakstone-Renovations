@@ -64,6 +64,10 @@ export const metadata: Metadata = {
     description:
       "Premium home renovation specialists serving Dublin, Kildare, Wicklow, and Meath.",
   },
+
+  verification: {
+    google: "Ayes4ClhlxuuVBihONyKJS4uaP9EVQzqTLdtgJ7sEig",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
