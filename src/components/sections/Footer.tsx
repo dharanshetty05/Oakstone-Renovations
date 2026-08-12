@@ -1,4 +1,6 @@
+"use client";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { company } from "@/constants/company";
 import { navigation } from "@/constants/navigation";
 import { layout } from "@/design/layout";
@@ -6,6 +8,8 @@ import { typography } from "@/design/typography";
 import { cn } from "@/lib/utils";
 
 export function Footer() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <footer
       aria-labelledby="footer-heading"
@@ -14,8 +18,13 @@ export function Footer() {
       <h2 id="footer-heading" className="sr-only">
         Site footer
       </h2>
-
-      <div className={layout.container}>
+      <motion.div
+        className={layout.container}
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: "easeOut" }}
+      >
         {/* ---------------------------------------------------- */}
         {/* Brand + contact — one aligned grid                    */}
         {/* ---------------------------------------------------- */}
@@ -33,7 +42,6 @@ export function Footer() {
                 <br />
                 Renovations
               </p>
-
               <p
                 className={cn(
                   typography.bodyLg,
@@ -45,7 +53,6 @@ export function Footer() {
                 lived in.
               </p>
             </div>
-
             {/* Contact — values lead, labels support */}
             <div className="lg:col-span-4 lg:col-start-9">
               <dl className="divide-y divide-white/10 border-y border-white/10">
@@ -62,7 +69,6 @@ export function Footer() {
                     </a>
                   </dd>
                 </div>
-
                 <div className="grid grid-cols-[auto,1fr] items-baseline gap-6 py-5">
                   <dt className="font-[family-name:var(--font-inter)] text-[11px] uppercase tracking-[0.16em] text-white/30">
                     Email
@@ -76,7 +82,6 @@ export function Footer() {
                     </a>
                   </dd>
                 </div>
-
                 <div className="grid grid-cols-[auto,1fr] items-baseline gap-6 py-5">
                   <dt className="font-[family-name:var(--font-inter)] text-[11px] uppercase tracking-[0.16em] text-white/30">
                     Areas
@@ -89,7 +94,6 @@ export function Footer() {
             </div>
           </div>
         </div>
-
         {/* ---------------------------------------------------- */}
         {/* Navigation + legal — one grounded bar                 */}
         {/* ---------------------------------------------------- */}
@@ -108,7 +112,6 @@ export function Footer() {
               ))}
             </ul>
           </nav>
-
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <p className="font-[family-name:var(--font-inter)] text-xs text-white/30">
               &copy; 2026 {company.name}. All rights reserved.
@@ -128,7 +131,7 @@ export function Footer() {
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
     </footer>
   );
 }

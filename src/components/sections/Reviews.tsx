@@ -89,7 +89,6 @@ function usePrefersReducedMotion() {
 
 export function Reviews() {
   const reducedMotion = usePrefersReducedMotion();
-
   const trackRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
 
@@ -108,12 +107,10 @@ export function Reviews() {
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
-
     const measure = () => {
       // Track renders two copies of the testimonials back to back.
       setSetWidth(el.scrollWidth / 2);
     };
-
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(el);
@@ -143,7 +140,7 @@ export function Reviews() {
       setIsNavigating(true);
       const target = x.get() - direction * stepWidth;
       animate(x, target, {
-        duration: 0.7,
+        duration: reducedMotion ? 0 : 0.7,
         ease: EASE,
         onComplete: () => {
           // Normalize back into [-setWidth, 0) so the marquee loop stays seamless.
@@ -157,7 +154,7 @@ export function Reviews() {
         },
       });
     },
-    [stepWidth, setWidth, x]
+    [stepWidth, setWidth, x, reducedMotion]
   );
 
   const goTo = useCallback(
@@ -166,12 +163,12 @@ export function Reviews() {
       setIsNavigating(true);
       const target = -(i * stepWidth);
       animate(x, target, {
-        duration: 0.7,
+        duration: reducedMotion ? 0 : 0.7,
         ease: EASE,
         onComplete: () => setIsNavigating(false),
       });
     },
-    [stepWidth, x]
+    [stepWidth, x, reducedMotion]
   );
 
   const next = () => navigateBy(1);
@@ -203,10 +200,11 @@ export function Reviews() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button
+            <motion.button
               type="button"
               onClick={prev}
               aria-label="Previous testimonials"
+              whileTap={reducedMotion ? undefined : { scale: 0.92 }}
               className={cn(
                 "flex h-12 w-12 items-center justify-center rounded-full border border-border text-text-secondary transition-all duration-300",
                 "hover:border-primary hover:text-primary hover:bg-surface",
@@ -214,11 +212,12 @@ export function Reviews() {
               )}
             >
               <ChevronLeft size={18} strokeWidth={1.5} />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={next}
               aria-label="Next testimonials"
+              whileTap={reducedMotion ? undefined : { scale: 0.92 }}
               className={cn(
                 "flex h-12 w-12 items-center justify-center rounded-full border border-border text-text-secondary transition-all duration-300",
                 "hover:border-primary hover:text-primary hover:bg-surface",
@@ -226,7 +225,7 @@ export function Reviews() {
               )}
             >
               <ChevronRight size={18} strokeWidth={1.5} />
-            </button>
+            </motion.button>
           </div>
         </motion.div>
 
@@ -280,12 +279,10 @@ export function Reviews() {
                       ))}
                     </div>
                   </div>
-
                   {/* Quote */}
                   <p className={cn(typography.small, "mt-4 text-text-primary/85")}>
                     {t.quote}
                   </p>
-
                   {/* Attribution */}
                   <div className="mt-5 flex items-center gap-3 border-t border-border/40 pt-5">
                     <img
@@ -313,12 +310,13 @@ export function Reviews() {
         {/* Pagination dots */}
         <div className="mt-14 flex items-center justify-center gap-2">
           {testimonials.map((_, i) => (
-            <button
+            <motion.button
               key={i}
               type="button"
               onClick={() => goTo(i)}
               aria-label={`Go to slide ${i + 1}`}
               aria-current={i === activeIndex}
+              whileTap={reducedMotion ? undefined : { scale: 0.85 }}
               className={cn(
                 "h-1.5 rounded-full transition-all duration-400",
                 i === activeIndex ? "w-7 bg-primary" : "w-1.5 bg-border hover:bg-border-strong"

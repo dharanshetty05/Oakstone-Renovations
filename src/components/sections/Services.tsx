@@ -1,7 +1,7 @@
 "use client";
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { layout } from "@/design/layout";
 import { typography } from "@/design/typography";
 import { cn } from "@/lib/utils";
@@ -83,6 +83,34 @@ export function Services() {
   const trackRef = useRef<HTMLDivElement>(null);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(true);
+  const shouldReduceMotion = useReducedMotion();
+
+  const headerVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 18 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: shouldReduceMotion ? 0 : 0.55, ease: "easeOut" },
+    },
+  };
+
+  const trackVariants: Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.12,
+      },
+    },
+  };
+
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: shouldReduceMotion ? 0 : 0.5, ease: "easeOut" },
+    },
+  };
 
   const updateScrollState = useCallback(() => {
     const track = trackRef.current;
@@ -119,7 +147,13 @@ export function Services() {
       aria-labelledby="services-heading"
     >
       <div className={cn(layout.section, layout.container)}>
-        <div className="mb-8 flex items-end justify-between gap-6 md:mb-9">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={headerVariants}
+          className="mb-8 flex items-end justify-between gap-6 md:mb-9"
+        >
           <div className="max-w-2xl">
             <h2 id="services-heading" className={typography.h2}>
               Renovation Services for{" "}
@@ -131,13 +165,13 @@ export function Services() {
               your lifestyle.
             </p>
           </div>
-
           <div className="hidden shrink-0 items-center gap-3 md:flex">
-            <button
+            <motion.button
               type="button"
               onClick={() => scrollByCard("prev")}
               disabled={!canScrollPrev}
               aria-label="Previous service"
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.92 }}
               className={cn(
                 "flex h-11 w-11 items-center justify-center rounded-full border border-border bg-white text-text-primary transition-all duration-200",
                 "hover:border-border-strong hover:text-primary",
@@ -146,12 +180,13 @@ export function Services() {
               )}
             >
               <ChevronIcon direction="left" />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={() => scrollByCard("next")}
               disabled={!canScrollNext}
               aria-label="Next service"
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.92 }}
               className={cn(
                 "flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white transition-all duration-200",
                 "hover:bg-primary/90",
@@ -160,22 +195,26 @@ export function Services() {
               )}
             >
               <ChevronIcon direction="right" />
-            </button>
+            </motion.button>
           </div>
-        </div>
-
-        <div
+        </motion.div>
+        <motion.div
           ref={trackRef}
           onScroll={updateScrollState}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={trackVariants}
           className={cn(
             "flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-4",
             "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           )}
         >
           {services.map((service) => (
-            <article
+            <motion.article
               key={service.title}
               data-service-card
+              variants={cardVariants}
               className={cn(
                 "group flex w-[82%] flex-none flex-col snap-start overflow-hidden rounded-3xl bg-card",
                 "border border-border transition-all duration-300",
@@ -212,9 +251,9 @@ export function Services() {
                   <ArrowIcon />
                 </a>
               </div>
-            </article>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

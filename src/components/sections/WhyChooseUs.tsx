@@ -1,11 +1,10 @@
 "use client";
-
 import Image from "next/image";
 import { Check } from "lucide-react";
 import { layout } from "@/design/layout";
 import { typography } from "@/design/typography";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 const IMAGE_URL = "https://images.unsplash.com/photo-1682888813913-e13f18692019?q=80&w=1600&auto=format&fit=crop";
 
@@ -37,6 +36,8 @@ const features = [
 ];
 
 export function WhyChooseUs() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section
       id="why-choose-us"
@@ -48,11 +49,11 @@ export function WhyChooseUs() {
           {/* Image */}
           <motion.div
             className="w-full shrink-0 lg:w-[40%]"
-            initial={{ opacity: 0, scale: 0.97 }}
+            initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.97 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{
-              duration: 0.8,
+              duration: shouldReduceMotion ? 0 : 0.8,
               ease: "easeOut",
             }}
           >
@@ -66,16 +67,15 @@ export function WhyChooseUs() {
               />
             </div>
           </motion.div>
-
           {/* Content */}
           <div className="w-full lg:w-[60%]">
             <motion.div
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.25 }}
               transition={{
-                duration: 0.6,
-                delay: 0.1,
+                duration: shouldReduceMotion ? 0 : 0.6,
+                delay: shouldReduceMotion ? 0 : 0.1,
                 ease: "easeOut",
               }}
             >
@@ -92,19 +92,19 @@ export function WhyChooseUs() {
                 From the first consultation to the final walkthrough, we focus on exceptional workmanship, honest communication, and a renovation experience you can feel confident about.
               </p>
             </motion.div>
-
             <div className="mt-6 border-t border-border/70 pt-6">
               <div className="grid grid-cols-1 gap-x-12 gap-y-5 md:grid-cols-2">
                 {features.map((feature, index) => (
                   <motion.div
                     key={feature.title}
-                    className="flex gap-4 transition-transform duration-300 hover:-translate-y-1"
-                    initial={{ opacity: 0, y: 14 }}
+                    className="flex gap-4"
+                    initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 14 }}
                     whileInView={{ opacity: 1, y: 0 }}
+                    whileHover={shouldReduceMotion ? undefined : { y: -4 }}
                     viewport={{ once: true }}
                     transition={{
-                      duration: 0.45,
-                      delay: index * 0.08,
+                      duration: shouldReduceMotion ? 0 : 0.45,
+                      delay: shouldReduceMotion ? 0 : index * 0.08,
                       ease: "easeOut",
                     }}
                   >

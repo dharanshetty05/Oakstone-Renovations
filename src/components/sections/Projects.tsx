@@ -1,6 +1,6 @@
 "use client";
-
 import Image from "next/image";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { layout } from "@/design/layout";
 import { typography } from "@/design/typography";
@@ -40,22 +40,65 @@ const projects = [
 ];
 
 export function Projects() {
+  const shouldReduceMotion = useReducedMotion();
+
+  const headerVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 18 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: shouldReduceMotion ? 0 : 0.55, ease: "easeOut" },
+    },
+  };
+
+  const gridVariants: Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.12,
+      },
+    },
+  };
+
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: shouldReduceMotion ? 0 : 0.5, ease: "easeOut" },
+    },
+  };
+
   return (
     <section id="projects" aria-labelledby="projects-heading" className="bg-white-50">
       <div className={cn(layout.container, layout.section)}>
-        <div className="max-w-2xl mb-12">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={headerVariants}
+          className="max-w-2xl mb-12"
+        >
           <h2 className={typography.h2}>
             Recent <span className="text-primary">Transformations</span>
           </h2>
-
           <p className={cn(typography.sectionDescription, "mt-4")}>
             Every renovation is carefully planned, expertly built, and finished with attention to every detail.
           </p>
-      </div>
-
-        <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3">
+        </motion.div>
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={gridVariants}
+          className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3"
+        >
           {projects.map((project) => (
-            <article key={project.title} className="group flex h-full flex-col">
+            <motion.article
+              key={project.title}
+              variants={cardVariants}
+              className="group flex h-full flex-col"
+            >
               <div
                 className={cn(
                   "relative aspect-[4/3] overflow-hidden rounded-3xl bg-surface",
@@ -71,7 +114,6 @@ export function Projects() {
                   className="object-cover transition-all duration-700 ease-out group-hover:scale-[1.05] group-hover:brightness-105"
                 />
               </div>
-
               <div className="mt-6 space-y-3 flex flex-1 flex-col">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold uppercase tracking-[0.1em] text-primary">
@@ -80,16 +122,14 @@ export function Projects() {
                   <span className="h-1 w-1 rounded-full bg-border-strong" aria-hidden="true" />
                   <span className={typography.small}>{project.location}</span>
                 </div>
-
                 <h3 className={typography.h4}>{project.title}</h3>
-
                 <p className={cn(typography.small, "min-h-[84px] leading-7")}>
                   {project.description}
                 </p>
               </div>
-            </article>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

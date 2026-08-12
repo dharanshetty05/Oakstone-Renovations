@@ -1,7 +1,7 @@
 "use client";
-
 import { useState } from "react";
 import { ChevronDown, Mail, MapPin, Phone } from "lucide-react";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { company } from "@/constants/company";
@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 
 const fieldBase =
   "peer w-full rounded-2xl border border-border bg-white px-5 text-text-primary outline-none transition-all duration-200 ease-out focus:border-2 focus:border-primary";
-
 const singleLineField = cn(fieldBase, "h-14");
 const selectField = cn(fieldBase, "h-14 appearance-none cursor-pointer pr-10");
 const textareaField = cn(fieldBase, "pt-6 pb-3 resize-none");
@@ -34,6 +33,8 @@ function floatingLabelClass(floated: boolean, focused: boolean, variant?: "texta
 type FieldKey = "name" | "email" | "phone" | "projectType" | "message";
 
 export function CTA() {
+  const shouldReduceMotion = useReducedMotion();
+
   const [values, setValues] = useState<Record<FieldKey, string>>({
     name: "",
     email: "",
@@ -53,31 +54,62 @@ export function CTA() {
     (
       e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => setValues((prev) => ({ ...prev, [field]: e.target.value }));
-
   const handleFocus = (field: FieldKey) => () =>
     setFocused((prev) => ({ ...prev, [field]: true }));
-
   const handleBlur = (field: FieldKey) => () =>
     setFocused((prev) => ({ ...prev, [field]: false }));
-
   const isFloated = (field: FieldKey) => focused[field] || values[field].length > 0;
+
+  const leftContainer: Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.1,
+      },
+    },
+  };
+
+  const leftItem: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 16 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: shouldReduceMotion ? 0 : 0.5, ease: "easeOut" },
+    },
+  };
+
+  const formCardVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: shouldReduceMotion ? 0 : 0.6, delay: shouldReduceMotion ? 0 : 0.15, ease: "easeOut" },
+    },
+  };
 
   return (
     <section id="contact" aria-labelledby="cta-heading" className="bg-primary">
       <div className={cn(layout.container, layout.sectionCompact)}>
         <div className="grid items-center gap-10 lg:grid-cols-[40%_60%]">
           {/* Left Content */}
-          <div className="space-y-6">
-            <SectionHeader
-              align="left"
-              eyebrow="Free Consultation"
-              title="Ready to Start Your Renovation?"
-              description="Tell us about your project and receive a free, no-obligation quote from our experienced team."
-              className="mb-0 [&>*]:text-white [&_.text-text-primary]:text-white [&_.text-text-secondary]:text-white/80 [&_.text-primary]:text-white"
-            />
-
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={leftContainer}
+            className="space-y-6"
+          >
+            <motion.div variants={leftItem}>
+              <SectionHeader
+                align="left"
+                eyebrow="Free Consultation"
+                title="Ready to Start Your Renovation?"
+                description="Tell us about your project and receive a free, no-obligation quote from our experienced team."
+                className="mb-0 [&>*]:text-white [&_.text-text-primary]:text-white [&_.text-text-secondary]:text-white/80 [&_.text-primary]:text-white"
+              />
+            </motion.div>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
+              <motion.div variants={leftItem} className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10">
                   <Phone size={16} className="text-white" aria-hidden="true" />
                 </div>
@@ -90,9 +122,8 @@ export function CTA() {
                     {company.phone}
                   </a>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-3">
+              </motion.div>
+              <motion.div variants={leftItem} className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10">
                   <Mail size={16} className="text-white" aria-hidden="true" />
                 </div>
@@ -105,9 +136,8 @@ export function CTA() {
                     {company.email}
                   </a>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-3">
+              </motion.div>
+              <motion.div variants={leftItem} className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10">
                   <MapPin size={16} className="text-white" aria-hidden="true" />
                 </div>
@@ -117,17 +147,22 @@ export function CTA() {
                     {company.areas.join(" • ")}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Quote Form */}
-          <div className="rounded-3xl bg-white p-6 shadow-xl md:p-7">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={formCardVariants}
+            className="rounded-3xl bg-white p-6 shadow-xl md:p-7"
+          >
             <form className="space-y-4">
               <h2 id="cta-heading" className={typography.h3}>
                 Request Your Free Quote
               </h2>
-
               <div className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="relative">
@@ -148,7 +183,6 @@ export function CTA() {
                       Full Name
                     </label>
                   </div>
-
                   <div className="relative">
                     <input
                       id="phone"
@@ -168,7 +202,6 @@ export function CTA() {
                     </label>
                   </div>
                 </div>
-
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="relative">
                     <input
@@ -188,7 +221,6 @@ export function CTA() {
                       Email Address
                     </label>
                   </div>
-
                   <div className="relative">
                     <select
                       id="project-type"
@@ -224,7 +256,6 @@ export function CTA() {
                     </label>
                   </div>
                 </div>
-
                 <div className="relative">
                   <textarea
                     id="message"
@@ -248,12 +279,16 @@ export function CTA() {
                   </label>
                 </div>
               </div>
-
-              <Button type="submit" size="large" className="w-full">
-                Get Free Quote
-              </Button>
+              <motion.div
+                whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+              >
+                <Button type="submit" size="large" className="w-full">
+                  Get Free Quote
+                </Button>
+              </motion.div>
             </form>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
