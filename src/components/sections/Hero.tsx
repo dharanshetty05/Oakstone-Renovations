@@ -5,65 +5,98 @@ import Image from "next/image";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { layout } from "@/design/layout";
 import { typography } from "@/design/typography";
-import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+
+const headlineLines = [
+  ["Beautiful", "Renovations."],
+  ["Thoughtfully", "Built."],
+];
 
 export function Hero() {
   const shouldReduceMotion = useReducedMotion();
 
   const ease = [0.22, 1, 0.36, 1] as const;
 
-  const textContainer: Variants = {
+  const contentVariants: Variants = {
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.14,
-        delayChildren: shouldReduceMotion ? 0 : 0.25,
+        staggerChildren: shouldReduceMotion ? 0 : 0.12,
+        delayChildren: shouldReduceMotion ? 0 : 0.2,
       },
     },
   };
 
-  const textItem: Variants = {
+  const itemVariants: Variants = {
     hidden: {
       opacity: 0,
-      y: shouldReduceMotion ? 0 : 20,
+      y: shouldReduceMotion ? 0 : 12,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: shouldReduceMotion ? 0 : 0.75,
+        duration: shouldReduceMotion ? 0 : 0.65,
         ease,
       },
     },
   };
 
-  const buttonMotion = shouldReduceMotion
-    ? {}
-    : {
-        whileHover: { y: -2 },
-        whileTap: { scale: 0.985 },
-      };
+  // Individual word reveal
+  const headingVariants: Variants = {
+    hidden: {
+      opacity: 1,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.075,
+        delayChildren: shouldReduceMotion ? 0 : 0.08,
+      },
+    },
+  };
+
+  const wordVariants: Variants = {
+    hidden: {
+      opacity: 0,
+      y: shouldReduceMotion ? 0 : 22,
+      filter: shouldReduceMotion ? "blur(0px)" : "blur(8px)",
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.65,
+        ease,
+      },
+    },
+  };
 
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative isolate flex min-h-[650px] items-center overflow-hidden bg-[#173D30] sm:min-h-[680px] lg:min-h-[720px] xl:min-h-[750px]"
+      className={cn(
+        "relative isolate flex items-center overflow-hidden",
+        "min-h-[calc(100vh-5.5rem)]",
+        "min-h-[calc(100svh-5.5rem)]",
+        "bg-[#17271F]"
+      )}
     >
       {/* Background photography */}
       <motion.div
         aria-hidden="true"
-        className="absolute inset-0 z-0"
+        className="absolute inset-0"
         initial={{
           opacity: 0,
-          scale: shouldReduceMotion ? 1 : 1.035,
+          scale: shouldReduceMotion ? 1 : 1.025,
         }}
         animate={{
           opacity: 1,
           scale: 1,
         }}
         transition={{
-          duration: shouldReduceMotion ? 0 : 1.6,
+          duration: shouldReduceMotion ? 0 : 1.5,
           ease,
         }}
       >
@@ -75,172 +108,222 @@ export function Hero() {
           quality={90}
           sizes="100vw"
           draggable={false}
-          className="object-cover object-[62%_center] md:object-[65%_center]"
+          className="object-cover object-[65%_center]"
         />
       </motion.div>
 
-      {/* Subtle overall tonal treatment */}
+      {/* Desktop green gradient */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] bg-[#17251E]/10"
-      />
-
-      {/* Rich forest-green shadow on the text side */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-[78%] bg-gradient-to-r from-[#101F19]/95 via-[#17291F]/75 via-[18%] to-transparent md:block"
+        className={cn(
+          "pointer-events-none absolute inset-y-0 left-0 z-[1]",
+          "hidden w-[76%] md:block lg:w-[70%]",
+          "bg-gradient-to-r",
+          "from-[#14251D]/95 via-[#17291F]/80",
+          "via-[48%] to-transparent"
+        )}
       />
 
       {/* Mobile readability overlay */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#101F19]/85 via-[#17291F]/70 to-[#17291F]/35 md:hidden"
+        className={cn(
+          "pointer-events-none absolute inset-0 z-[1] md:hidden",
+          "bg-gradient-to-b",
+          "from-[#14251D]/85 via-[#14251D]/65 to-[#14251D]/45"
+        )}
       />
 
-      {/* Gentle bottom depth */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-36 bg-gradient-to-t from-[#101F19]/30 to-transparent"
-      />
-
-      {/* Content */}
+      {/* Main content */}
       <div
         className={cn(
           layout.container,
-          "relative z-10 w-full py-24 sm:py-28 lg:py-32"
+          "relative z-10 w-full",
+          "py-24 sm:py-28 lg:py-20"
         )}
       >
-        <div
+        <motion.div
+          variants={contentVariants}
+          initial="hidden"
+          animate="visible"
           className={cn(
-            layout.content,
-            "max-w-[700px] space-y-8 sm:space-y-9"
+            "max-w-[1100px]",
+            "text-center md:text-left"
           )}
         >
+          {/* Service area */}
           <motion.div
-            variants={textContainer}
-            initial="hidden"
-            animate="visible"
-            className="space-y-6 sm:space-y-7"
+            variants={itemVariants}
+            className={cn(
+              "mb-7 flex flex-wrap items-center gap-2",
+              "justify-center md:justify-start",
+              "text-[12px] font-medium tracking-[0.01em]",
+              "text-[#F3EEE3]/90 sm:text-[13px]"
+            )}
           >
-            {/* Restrained terracotta accent */}
-            <motion.div
-              variants={textItem}
+            <span
               aria-hidden="true"
-              className="flex items-center gap-3"
-            >
-              <span className="h-[2px] w-11 bg-[#A65D48]" />
-              <span className="h-px w-8 bg-[#F3EEE3]/35" />
-            </motion.div>
+              className="h-2 w-2 shrink-0 rounded-full bg-[#D6A18A]"
+            />
 
-            {/* Main heading */}
-            <motion.h1
-              id="hero-heading"
-              variants={textItem}
-              className={cn(
-                typography.h2,
-                "max-w-[680px] text-balance !text-[#F3EEE3]",
-                "leading-[1.08] tracking-[-0.035em]",
-                "[text-shadow:0_2px_18px_rgba(0,0,0,0.2)]"
-              )}
-            >
-              Transform Your Home with Beautiful Renovations Built to Last.
-            </motion.h1>
-
-            {/* Supporting copy */}
-            <motion.p
-              variants={textItem}
-              className={cn(
-                typography.small,
-                "max-w-[535px] text-pretty text-[#F3EEE3]/85",
-                "leading-[1.85]",
-                "[text-shadow:0_1px_8px_rgba(0,0,0,0.3)]"
-              )}
-            >
-              From modern kitchens and luxury bathrooms to complete home
-              renovations, we create thoughtfully designed spaces with
-              exceptional craftsmanship, transparent pricing, and a renovation
-              experience you can trust.
-            </motion.p>
+            <span>
+              Renovating homes across Dublin, Bray, Naas,
+              Kildare, Wicklow & Meath
+            </span>
           </motion.div>
 
-          {/* Premium CTAs */}
+          {/* Word-by-word headline */}
+          <motion.h1
+            id="hero-heading"
+            variants={headingVariants}
+            className={cn(
+              typography.h2,
+              "mx-auto max-w-[1100px] md:mx-0",
+              "!text-[clamp(1.85rem,6vw,2.5rem)]",
+              "md:!text-[clamp(4rem,5.5vw,5.75rem)]",
+              "!text-[#F3EEE3]",
+              "leading-[1.12] md:leading-[1.06]",
+              "tracking-[-0.045em]",
+              "text-balance"
+            )}
+          >
+            {/* Accessible complete heading */}
+            <span className="sr-only">
+              Beautiful Renovations. Thoughtfully Built.
+            </span>
+
+            {/* Animated visual heading */}
+            <span aria-hidden="true" className="block">
+              {headlineLines.map((line, lineIndex) => (
+                <span
+                  key={lineIndex}
+                  className="block"
+                >
+                  {line.map((word, wordIndex) => (
+                    <motion.span
+                      key={word}
+                      variants={wordVariants}
+                      className="inline-block"
+                    >
+                      {word}
+                      {wordIndex !== line.length - 1 && "\u00A0"}
+                    </motion.span>
+                  ))}
+                </span>
+              ))}
+            </span>
+          </motion.h1>
+
+          {/* Supporting copy */}
+          <motion.p
+            variants={itemVariants}
+            className={cn(
+              typography.small,
+              "mx-auto mt-7 max-w-[620px]",
+              "text-pretty leading-[1.8]",
+              "text-[#F3EEE3]/85",
+              "md:mx-0"
+            )}
+          >
+            From bespoke kitchens and luxury bathrooms to
+            complete home transformations, we bring thoughtful
+            design, skilled craftsmanship and clear communication
+            to every project.
+          </motion.p>
+
+          {/* Calls to action */}
           <motion.div
-            initial={{
-              opacity: 0,
-              y: shouldReduceMotion ? 0 : 16,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: shouldReduceMotion ? 0 : 0.7,
-              delay: shouldReduceMotion ? 0 : 0.65,
-              ease,
-            }}
-            className="flex flex-col gap-3.5 pt-1 sm:flex-row sm:items-center sm:gap-4"
+            variants={itemVariants}
+            className={cn(
+              "mt-9 flex flex-col items-center",
+              "gap-4 sm:flex-row sm:gap-5",
+              "md:items-center"
+            )}
           >
             {/* Primary CTA */}
-            <motion.div
-              {...buttonMotion}
+            <motion.a
+              href="#contact"
+              whileHover={
+                shouldReduceMotion ? undefined : { y: -2 }
+              }
+              whileTap={
+                shouldReduceMotion ? undefined : { scale: 0.98 }
+              }
               transition={{ duration: 0.25, ease }}
-              className="w-full sm:w-auto"
+              className={cn(
+                "group inline-flex min-h-[60px]",
+                "w-full sm:w-auto",
+                "items-center justify-center gap-3",
+                "rounded-full border border-[#F3EEE3]",
+                "bg-[#F3EEE3] px-8 py-4",
+                "text-[15px] font-semibold",
+                "tracking-[-0.015em] text-[#193B2D]",
+                "shadow-[0_8px_28px_rgba(0,0,0,0.15)]",
+                "transition-colors duration-300",
+                "hover:border-white hover:bg-white",
+                "focus-visible:outline-none",
+                "focus-visible:ring-2 focus-visible:ring-[#D6A18A]",
+                "focus-visible:ring-offset-2",
+                "focus-visible:ring-offset-[#17271F]"
+              )}
             >
-              <Button
-                size="large"
-                className={cn(
-                  "group relative w-full min-w-[215px] justify-center",
-                  "!border !border-[#F3EEE3]/80",
-                  "!bg-[#F3EEE3] !text-[#173D30]",
-                  "font-semibold tracking-[-0.01em]",
-                  "shadow-[0_8px_30px_rgba(0,0,0,0.16)]",
-                  "transition-all duration-300",
-                  "hover:!border-white hover:!bg-white",
-                  "hover:shadow-[0_12px_36px_rgba(0,0,0,0.22)]",
-                  "focus-visible:outline-none focus-visible:ring-2",
-                  "focus-visible:ring-[#A65D48] focus-visible:ring-offset-2",
-                  "focus-visible:ring-offset-[#173D30]"
-                )}
-              >
-                <span>Get Free Quote</span>
-                <span
-                  aria-hidden="true"
-                  className="ml-2 inline-block text-[#A65D48] transition-transform duration-300 group-hover:translate-x-1"
-                >
-                  →
-                </span>
-              </Button>
-            </motion.div>
+              Discuss Your Project
 
-            {/* Secondary CTA */}
-            <motion.div
-              {...buttonMotion}
-              transition={{ duration: 0.25, ease }}
-              className="w-full sm:w-auto"
-            >
-              <Button
-                variant="secondary"
-                size="large"
+              <span
+                aria-hidden="true"
                 className={cn(
-                  "w-full min-w-[190px] justify-center",
-                  "!border !border-[#F3EEE3]/65",
-                  "!bg-[#173D30]/25 !text-[#F3EEE3]",
-                  "font-medium tracking-[-0.01em]",
-                  "backdrop-blur-sm",
-                  "shadow-[0_6px_24px_rgba(0,0,0,0.12)]",
-                  "transition-all duration-300",
-                  "hover:!border-[#F3EEE3] hover:!bg-[#F3EEE3]/12",
-                  "hover:shadow-[0_10px_30px_rgba(0,0,0,0.18)]",
-                  "focus-visible:outline-none focus-visible:ring-2",
-                  "focus-visible:ring-[#A65D48] focus-visible:ring-offset-2",
-                  "focus-visible:ring-offset-[#173D30]"
+                  "text-[#A65D48]",
+                  "transition-transform duration-300",
+                  "group-hover:translate-x-1"
                 )}
               >
-                View Projects
-              </Button>
-            </motion.div>
+                →
+              </span>
+            </motion.a>
+
+            {/* Glass secondary CTA */}
+            <motion.a
+              href="#projects"
+              whileHover={
+                shouldReduceMotion ? undefined : { y: -2 }
+              }
+              whileTap={
+                shouldReduceMotion ? undefined : { scale: 0.98 }
+              }
+              transition={{ duration: 0.25, ease }}
+              className={cn(
+                "group inline-flex min-h-[60px]",
+                "w-full sm:w-auto",
+                "items-center justify-center gap-3",
+                "rounded-full border border-white/30",
+                "bg-white/[0.10] px-8 py-4",
+                "text-[15px] font-medium",
+                "tracking-[-0.01em] text-[#F3EEE3]",
+                "backdrop-blur-xl",
+                "shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]",
+                "transition-all duration-300",
+                "hover:border-white/50",
+                "hover:bg-white/[0.18]",
+                "focus-visible:outline-none",
+                "focus-visible:ring-2 focus-visible:ring-[#D6A18A]",
+                "focus-visible:ring-offset-2",
+                "focus-visible:ring-offset-[#17271F]"
+              )}
+            >
+              Explore Our Work
+
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "transition-transform duration-300",
+                  "group-hover:translate-x-1"
+                )}
+              >
+                →
+              </span>
+            </motion.a>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
