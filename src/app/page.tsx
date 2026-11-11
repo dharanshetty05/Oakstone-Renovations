@@ -35,7 +35,7 @@ export default function HomePage() {
         }}
       />
       
-      <Navigation />
+      {/* <Navigation /> */}
 
       <main>
         <Hero />
