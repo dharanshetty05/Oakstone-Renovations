@@ -1,39 +1,65 @@
+
 "use client";
-import Image from "next/image";
-import { Check } from "lucide-react";
+
+import { motion, useReducedMotion } from "framer-motion";
 import { layout } from "@/design/layout";
 import { typography } from "@/design/typography";
 import { cn } from "@/lib/utils";
-import { motion, useReducedMotion } from "framer-motion";
 
-const IMAGE_URL = "https://images.unsplash.com/photo-1682888813913-e13f18692019?q=80&w=1600&auto=format&fit=crop";
-
-const features = [
+const principles = [
   {
-    title: "Premium Craftsmanship",
-    description: "Precision-built with exceptional attention to detail.",
+    number: "01",
+    category: "PLANNING",
+    title: "Considered from the beginning.",
+    description:
+      "Understanding your space, priorities and expectations before work begins. Every good renovation starts with a clear understanding of what matters to you.",
   },
   {
-    title: "Transparent Pricing",
-    description: "Clear quotations with no hidden surprises.",
+    number: "02",
+    category: "CRAFTSMANSHIP",
+    title: "Details make the difference.",
+    description:
+      "From material choices to the finishing touches, we believe thoughtful decisions and attention to detail shape the quality of the final space.",
   },
   {
-    title: "Fully Insured",
-    description: "Complete peace of mind throughout your renovation.",
+    number: "03",
+    category: "COMMUNICATION",
+    title: "Always know where things stand.",
+    description:
+      "Clear conversations and considered planning matter. We value keeping you informed and involved throughout your renovation.",
   },
   {
-    title: "Reliable Timelines",
-    description: "Projects delivered with consistent communication.",
-  },
-  {
-    title: "Experienced Team",
-    description: "Skilled professionals trusted across Ireland.",
-  },
-  {
-    title: "Customer First",
-    description: "Respectful service from consultation to completion.",
+    number: "04",
+    category: "CARE",
+    title: "Respect for the home you live in.",
+    description:
+      "Renovating a home is personal. Every space deserves consideration, respect and an approach that puts the people living in it first.",
   },
 ];
+
+const revealVariants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.65,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  },
+};
+
+const listVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
 
 export function WhyChooseUs() {
   const shouldReduceMotion = useReducedMotion();
@@ -42,89 +68,116 @@ export function WhyChooseUs() {
     <section
       id="why-choose-us"
       aria-labelledby="why-choose-us-heading"
-      className="bg-amber-50 overflow-hidden"
+      className="overflow-hidden bg-[#F4F1E8] text-[#242C26]"
     >
       <div className={cn(layout.container, layout.section)}>
-        <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16 xl:gap-20">
-          {/* Image */}
+
+        {/* SECTION INTRODUCTION */}
+
+        <div className="grid grid-cols-1 items-end gap-7 border-b border-[#E7E1D5] pb-10 md:grid-cols-[1.3fr_0.7fr] md:gap-12 lg:pb-14">
+
+          {/* Heading */}
+
           <motion.div
-            className="w-full shrink-0 lg:w-[40%]"
-            initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.97 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{
-              duration: shouldReduceMotion ? 0 : 0.8,
-              ease: "easeOut",
-            }}
+            initial={shouldReduceMotion ? false : "hidden"}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={revealVariants}
           >
-            <div className="group relative aspect-[5/6] w-full overflow-hidden rounded-[2rem] shadow-sm">
-              <Image
-                src={IMAGE_URL}
-                alt="A finished luxury kitchen renovation with a marble island and custom cabinetry"
-                fill
-                sizes="(min-width: 1024px) 40vw, 100vw"
-                className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-              />
+            <div className="mb-5 flex items-center gap-3">
+              <span className="h-px w-8 bg-[#D6A18A]" />
+
+              <span className="font-[family-name:var(--font-manrope)] text-[10px] font-semibold uppercase tracking-[0.2em] text-[#686D64]">
+                The Oakstone Approach
+              </span>
             </div>
-          </motion.div>
-          {/* Content */}
-          <div className="w-full lg:w-[60%]">
-            <motion.div
-              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{
-                duration: shouldReduceMotion ? 0 : 0.6,
-                delay: shouldReduceMotion ? 0 : 0.1,
-                ease: "easeOut",
-              }}
+
+            <h2
+              id="why-choose-us-heading"
+              className={cn(
+                typography.h2,
+                "max-w-[700px] leading-[1.12] tracking-[-0.045em]"
+              )}
             >
-              <h2
-                id="why-choose-us-heading"
-                className={cn(typography.h2, "max-w-[520px] leading-tight")}
-              >
-                Built on{" "}
-                <span className="text-primary">Quality </span> .
-                <br />
-                Backed by Trust.
-              </h2>
-              <p className={cn(typography.sectionDescription, "mt-5 max-w-[620px]")}>
-                From the first consultation to the final walkthrough, we focus on exceptional workmanship, honest communication, and a renovation experience you can feel confident about.
-              </p>
-            </motion.div>
-            <div className="mt-6 border-t border-border/70 pt-6">
-              <div className="grid grid-cols-1 gap-x-12 gap-y-5 md:grid-cols-2">
-                {features.map((feature, index) => (
-                  <motion.div
-                    key={feature.title}
-                    className="flex gap-4"
-                    initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 14 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    whileHover={shouldReduceMotion ? undefined : { y: -4 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      duration: shouldReduceMotion ? 0 : 0.45,
-                      delay: shouldReduceMotion ? 0 : index * 0.08,
-                      ease: "easeOut",
-                    }}
-                  >
-                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/5 text-primary">
-                      <Check size={14} strokeWidth={2.5} />
-                    </span>
-                    <div>
-                      <h3 className="font-[family-name:var(--font-manrope)] text-lg font-semibold tracking-tight text-text-primary">
-                        {feature.title}
-                      </h3>
-                      <p className={cn(typography.small, "mt-1 leading-7 text-text-secondary")}>
-                        {feature.description}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </div>
+              Good renovations are about{" "}
+              <span className="text-[#193B2D]">
+                more than what you see.
+              </span>
+            </h2>
+          </motion.div>
+
+          {/* Supporting copy */}
+
+          <motion.p
+            initial={shouldReduceMotion ? false : "hidden"}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={revealVariants}
+            transition={{
+              delay: shouldReduceMotion ? 0 : 0.12,
+            }}
+            className={cn(
+              typography.sectionDescription,
+              "max-w-[430px] leading-[1.9] text-[#686D64] md:justify-self-end"
+            )}
+          >
+            The best transformations are shaped by the
+            decisions behind them. Thoughtful planning,
+            considered craftsmanship and genuine care
+            make all the difference to the space you call home.
+          </motion.p>
         </div>
+
+        {/* RENOVATION PRINCIPLES */}
+
+        <motion.div
+          initial={shouldReduceMotion ? false : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.12 }}
+          variants={shouldReduceMotion ? undefined : listVariants}
+          className="grid grid-cols-1 md:grid-cols-2"
+        >
+          {principles.map((principle, index) => (
+            <motion.article
+              key={principle.number}
+              variants={shouldReduceMotion ? undefined : revealVariants}
+              className={cn(
+                "group relative border-b border-[#E7E1D5] py-8 sm:py-10 lg:py-12",
+                index % 2 === 0 &&
+                  "md:border-r md:border-r-[#E7E1D5] md:pr-10 lg:pr-16",
+                index % 2 !== 0 &&
+                  "md:pl-10 lg:pl-16"
+              )}
+            >
+              {/* Number and category */}
+
+              <div className="mb-5 flex items-center gap-3">
+                <span className="font-[family-name:var(--font-manrope)] text-[11px] font-medium tracking-[0.12em] text-[#C18D76]">
+                  {principle.number}
+                </span>
+
+                <span className="h-px w-5 bg-[#D6A18A]/70" />
+
+                <span className="font-[family-name:var(--font-manrope)] text-[9px] font-semibold tracking-[0.17em] text-[#686D64]">
+                  {principle.category}
+                </span>
+              </div>
+
+              {/* Title */}
+
+              <h3 className="max-w-[430px] font-[family-name:var(--font-manrope)] text-[22px] font-semibold leading-[1.2] tracking-[-0.04em] text-[#242C26] transition-colors duration-300 group-hover:text-[#193B2D] sm:text-[25px] lg:text-[28px]">
+                {principle.title}
+              </h3>
+
+              {/* Description */}
+
+              <p className="mt-4 max-w-[440px] font-[family-name:var(--font-manrope)] text-[13px] leading-[1.9] text-[#686D64] sm:text-sm">
+                {principle.description}
+              </p>
+            </motion.article>
+          ))}
+        </motion.div>
+
       </div>
     </section>
   );
