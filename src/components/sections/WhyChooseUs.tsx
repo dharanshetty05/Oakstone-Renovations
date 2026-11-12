@@ -9,38 +9,28 @@ import { cn } from "@/lib/utils";
 const principles = [
   {
     number: "01",
-    category: "PLANNING",
-    title: "Considered from the beginning.",
+    title: "A space that works as well as it looks.",
     description:
-      "Understanding your space, priorities and expectations before work begins. Every good renovation starts with a clear understanding of what matters to you.",
+      "A beautiful room still needs to work for everyday life. The layout, storage and practical details should make sense for the people who call it home.",
   },
   {
     number: "02",
-    category: "CRAFTSMANSHIP",
-    title: "Details make the difference.",
+    title: "Every choice has a purpose.",
     description:
-      "From material choices to the finishing touches, we believe thoughtful decisions and attention to detail shape the quality of the final space.",
+      "Materials, proportions, lighting and finishes all shape the result. Each decision should work together to create a space that feels considered.",
   },
   {
     number: "03",
-    category: "COMMUNICATION",
-    title: "Always know where things stand.",
+    title: "Clear conversations, throughout.",
     description:
-      "Clear conversations and considered planning matter. We value keeping you informed and involved throughout your renovation.",
-  },
-  {
-    number: "04",
-    category: "CARE",
-    title: "Respect for the home you live in.",
-    description:
-      "Renovating a home is personal. Every space deserves consideration, respect and an approach that puts the people living in it first.",
+      "Renovations involve decisions at every stage. Straightforward communication helps you understand your options, the work involved and what comes next.",
   },
 ];
 
 const revealVariants = {
   hidden: {
     opacity: 0,
-    y: 20,
+    y: 18,
   },
   visible: {
     opacity: 1,
@@ -72,11 +62,11 @@ export function WhyChooseUs() {
     >
       <div className={cn(layout.container, layout.section)}>
 
-        {/* SECTION INTRODUCTION */}
+        {/* INTRODUCTION */}
 
-        <div className="grid grid-cols-1 items-end gap-7 border-b border-[#E7E1D5] pb-10 md:grid-cols-[1.3fr_0.7fr] md:gap-12 lg:pb-14">
+        <div className="grid grid-cols-1 items-end gap-6 border-b border-[#E7E1D5] pb-10 md:grid-cols-[1.2fr_0.8fr] md:gap-12 lg:pb-14">
 
-          {/* Heading */}
+          {/* Main heading */}
 
           <motion.div
             initial={shouldReduceMotion ? false : "hidden"}
@@ -84,29 +74,21 @@ export function WhyChooseUs() {
             viewport={{ once: true, amount: 0.3 }}
             variants={revealVariants}
           >
-            <div className="mb-5 flex items-center gap-3">
-              <span className="h-px w-8 bg-[#D6A18A]" />
-
-              <span className="font-[family-name:var(--font-manrope)] text-[10px] font-semibold uppercase tracking-[0.2em] text-[#686D64]">
-                The Oakstone Approach
-              </span>
-            </div>
-
             <h2
               id="why-choose-us-heading"
               className={cn(
                 typography.h2,
-                "max-w-[700px] leading-[1.12] tracking-[-0.045em]"
+                "max-w-[760px] leading-[1.12] tracking-[-0.045em]"
               )}
             >
-              Good renovations are about{" "}
+              A renovation should feel right{" "}
               <span className="text-[#193B2D]">
-                more than what you see.
+                long after the work is done.
               </span>
             </h2>
           </motion.div>
 
-          {/* Supporting copy */}
+          {/* Supporting description */}
 
           <motion.p
             initial={shouldReduceMotion ? false : "hidden"}
@@ -118,60 +100,45 @@ export function WhyChooseUs() {
             }}
             className={cn(
               typography.sectionDescription,
-              "max-w-[430px] leading-[1.9] text-[#686D64] md:justify-self-end"
+              "w-full max-w-[500px] leading-[1.85] text-[#686D64] md:justify-self-end"
             )}
           >
-            The best transformations are shaped by the
-            decisions behind them. Thoughtful planning,
-            considered craftsmanship and genuine care
-            make all the difference to the space you call home.
+            It takes more than a beautiful finish.
+            Thoughtful decisions, quality craftsmanship
+            and clear communication shape the entire experience.
           </motion.p>
         </div>
 
-        {/* RENOVATION PRINCIPLES */}
+        {/* THREE PRINCIPLES */}
 
         <motion.div
           initial={shouldReduceMotion ? false : "hidden"}
           whileInView="visible"
           viewport={{ once: true, amount: 0.12 }}
           variants={shouldReduceMotion ? undefined : listVariants}
-          className="grid grid-cols-1 md:grid-cols-2"
+          className="flex flex-col"
         >
-          {principles.map((principle, index) => (
+          {principles.map((principle) => (
             <motion.article
               key={principle.number}
               variants={shouldReduceMotion ? undefined : revealVariants}
-              className={cn(
-                "group relative border-b border-[#E7E1D5] py-8 sm:py-10 lg:py-12",
-                index % 2 === 0 &&
-                  "md:border-r md:border-r-[#E7E1D5] md:pr-10 lg:pr-16",
-                index % 2 !== 0 &&
-                  "md:pl-10 lg:pl-16"
-              )}
+              className="group grid grid-cols-[42px_1fr] gap-x-5 gap-y-3 border-b border-[#E7E1D5] py-8 sm:grid-cols-[52px_1fr] sm:gap-x-7 sm:py-10 lg:grid-cols-[72px_0.95fr_1.05fr] lg:items-center lg:gap-x-10 lg:py-12"
             >
-              {/* Number and category */}
+              {/* Number */}
 
-              <div className="mb-5 flex items-center gap-3">
-                <span className="font-[family-name:var(--font-manrope)] text-[11px] font-medium tracking-[0.12em] text-[#C18D76]">
-                  {principle.number}
-                </span>
-
-                <span className="h-px w-5 bg-[#D6A18A]/70" />
-
-                <span className="font-[family-name:var(--font-manrope)] text-[9px] font-semibold tracking-[0.17em] text-[#686D64]">
-                  {principle.category}
-                </span>
-              </div>
+              <span className="row-span-2 pt-1 font-[family-name:var(--font-manrope)] text-[12px] font-medium tracking-[0.1em] text-[#C18D76] lg:row-span-1 lg:self-start lg:pt-2">
+                {principle.number}
+              </span>
 
               {/* Title */}
 
-              <h3 className="max-w-[430px] font-[family-name:var(--font-manrope)] text-[22px] font-semibold leading-[1.2] tracking-[-0.04em] text-[#242C26] transition-colors duration-300 group-hover:text-[#193B2D] sm:text-[25px] lg:text-[28px]">
+              <h3 className="max-w-[500px] font-[family-name:var(--font-manrope)] text-[21px] font-semibold leading-[1.25] tracking-[-0.035em] text-[#242C26] transition-colors duration-300 group-hover:text-[#193B2D] sm:text-[24px] lg:text-[26px]">
                 {principle.title}
               </h3>
 
               {/* Description */}
 
-              <p className="mt-4 max-w-[440px] font-[family-name:var(--font-manrope)] text-[13px] leading-[1.9] text-[#686D64] sm:text-sm">
+              <p className="max-w-[490px] font-[family-name:var(--font-manrope)] text-[13px] leading-[1.9] text-[#686D64] sm:text-sm lg:justify-self-end">
                 {principle.description}
               </p>
             </motion.article>
