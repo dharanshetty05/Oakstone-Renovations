@@ -241,17 +241,6 @@ export function Projects() {
 
                     </motion.div>
                   </motion.div>
-
-                  {/* CARD FOOTER */}
-                  <div className="mt-6 flex items-center justify-between border-t border-[#193B2D]/10 pt-4 sm:mt-8 sm:pt-5">
-                    <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#686D64]">
-                      Oakstone Renovations
-                    </span>
-
-                    <span className="text-[10px] font-semibold tracking-[0.14em] text-[#193B2D]">
-                      {project.number} / 03
-                    </span>
-                  </div>
                 </div>
               </article>
             );

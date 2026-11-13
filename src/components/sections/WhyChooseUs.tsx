@@ -27,32 +27,50 @@ const principles = [
   },
 ];
 
-const revealVariants = {
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const introVariants = {
   hidden: {
     opacity: 0,
-    y: 18,
+    y: 24,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.85,
+      ease,
+    },
+  },
+};
+
+const rowVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.13,
+    },
+  },
+};
+
+const childVariants = {
+  hidden: {
+    opacity: 0,
+    y: 14,
   },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.65,
-      ease: [0.22, 1, 0.36, 1] as const,
-    },
-  },
-};
-
-const listVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.12,
+      ease,
     },
   },
 };
 
 export function WhyChooseUs() {
   const shouldReduceMotion = useReducedMotion();
+  const reduceMotion = shouldReduceMotion ?? false;
 
   return (
     <section
@@ -69,10 +87,10 @@ export function WhyChooseUs() {
           {/* Main heading */}
 
           <motion.div
-            initial={shouldReduceMotion ? false : "hidden"}
+            initial={reduceMotion ? false : "hidden"}
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            variants={revealVariants}
+            variants={introVariants}
           >
             <h2
               id="why-choose-us-heading"
@@ -91,12 +109,12 @@ export function WhyChooseUs() {
           {/* Supporting description */}
 
           <motion.p
-            initial={shouldReduceMotion ? false : "hidden"}
+            initial={reduceMotion ? false : "hidden"}
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            variants={revealVariants}
+            variants={introVariants}
             transition={{
-              delay: shouldReduceMotion ? 0 : 0.12,
+              delay: reduceMotion ? 0 : 0.16,
             }}
             className={cn(
               typography.sectionDescription,
@@ -111,39 +129,76 @@ export function WhyChooseUs() {
 
         {/* THREE PRINCIPLES */}
 
-        <motion.div
-          initial={shouldReduceMotion ? false : "hidden"}
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.12 }}
-          variants={shouldReduceMotion ? undefined : listVariants}
-          className="flex flex-col"
-        >
+        <div className="flex flex-col">
+
           {principles.map((principle) => (
             <motion.article
               key={principle.number}
-              variants={shouldReduceMotion ? undefined : revealVariants}
-              className="group grid grid-cols-[42px_1fr] gap-x-5 gap-y-3 border-b border-[#E7E1D5] py-8 sm:grid-cols-[52px_1fr] sm:gap-x-7 sm:py-10 lg:grid-cols-[72px_0.95fr_1.05fr] lg:items-center lg:gap-x-10 lg:py-12"
+              initial={reduceMotion ? false : "hidden"}
+              whileInView="visible"
+              viewport={{
+                once: true,
+                amount: 0.35,
+              }}
+              variants={reduceMotion ? undefined : rowVariants}
+              className={cn(
+                "group relative grid grid-cols-[42px_minmax(0,1fr)] gap-x-5 gap-y-3 border-b border-transparent px-3 py-8 transition-colors duration-500 hover:bg-[#FBF9F3] sm:grid-cols-[52px_minmax(0,1fr)] sm:gap-x-7 sm:py-10 lg:grid-cols-[72px_minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-x-10 lg:py-12",
+                "-mx-3 sm:-mx-3"
+              )}
             >
-              {/* Number */}
 
-              <span className="row-span-2 pt-1 font-[family-name:var(--font-manrope)] text-[12px] font-medium tracking-[0.1em] text-[#C18D76] lg:row-span-1 lg:self-start lg:pt-2">
+              {/* NUMBER */}
+
+              <motion.span
+                variants={reduceMotion ? undefined : childVariants}
+                className="row-span-2 pt-1 font-[family-name:var(--font-manrope)] text-[12px] font-medium tracking-[0.1em] text-[#C18D76] lg:row-span-1 lg:self-start lg:pt-2"
+              >
                 {principle.number}
-              </span>
+              </motion.span>
 
-              {/* Title */}
+              {/* TITLE */}
 
-              <h3 className="max-w-[500px] font-[family-name:var(--font-manrope)] text-[21px] font-semibold leading-[1.25] tracking-[-0.035em] text-[#242C26] transition-colors duration-300 group-hover:text-[#193B2D] sm:text-[24px] lg:text-[26px]">
+              <motion.h3
+                variants={reduceMotion ? undefined : childVariants}
+                className="max-w-[500px] font-[family-name:var(--font-manrope)] text-[21px] font-semibold leading-[1.25] tracking-[-0.035em] text-[#242C26] transition-colors duration-500 group-hover:text-[#193B2D] sm:text-[24px] lg:text-[26px]"
+              >
                 {principle.title}
-              </h3>
+              </motion.h3>
 
-              {/* Description */}
+              {/* DESCRIPTION */}
 
-              <p className="max-w-[490px] font-[family-name:var(--font-manrope)] text-[13px] leading-[1.9] text-[#686D64] sm:text-sm lg:justify-self-end">
+              <motion.p
+                variants={reduceMotion ? undefined : childVariants}
+                className="max-w-[490px] font-[family-name:var(--font-manrope)] text-[13px] leading-[1.9] text-[#686D64] sm:text-sm lg:justify-self-end"
+              >
                 {principle.description}
-              </p>
+              </motion.p>
+
+              {/* ANIMATED DIVIDER */}
+
+              <motion.span
+                aria-hidden="true"
+                initial={
+                  reduceMotion
+                    ? false
+                    : { scaleX: 0 }
+                }
+                whileInView={{ scaleX: 1 }}
+                viewport={{
+                  once: true,
+                  amount: 0.35,
+                }}
+                transition={{
+                  duration: reduceMotion ? 0 : 0.9,
+                  ease,
+                  delay: reduceMotion ? 0 : 0.15,
+                }}
+                className="absolute bottom-0 left-0 h-px w-full origin-left bg-[#E7E1D5]"
+              />
+
             </motion.article>
           ))}
-        </motion.div>
+        </div>
 
       </div>
     </section>
