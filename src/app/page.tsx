@@ -43,7 +43,7 @@ export default function HomePage() {
         <Projects />
         <WhyChooseUs />
         <Reviews />
-        <CTA />
+        {/* <CTA /> */}
       </main>
 
       <Footer />
