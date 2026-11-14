@@ -19,21 +19,21 @@ const projects = [
     location: "Dublin",
     category: "Kitchen",
     description:
-      "A dated kitchen transformed into a bright open-plan family space with bespoke cabinetry, quartz worktops, and modern lighting.",
+      "A dated kitchen reworked into a bright, open-plan family space, with bespoke cabinetry, quartz worktops and carefully considered lighting.",
     image:
       "https://images.unsplash.com/photo-1721614465872-f59fb6feb0f3?q=80&w=1800&auto=format&fit=crop",
-    alt: "Renovated open-plan kitchen with white cabinetry, quartz countertops, and wood flooring.",
+    alt: "Open-plan kitchen with white cabinetry, quartz countertops and wood flooring.",
   },
   {
     number: "02",
-    title: "Contemporary Bathroom Remodel",
+    title: "Contemporary Bathroom Renovation",
     location: "Bray",
     category: "Bathroom",
     description:
-      "A complete bathroom redesign featuring a walk-in shower, premium fixtures, and timeless finishes.",
+      "A complete bathroom renovation centred on a walk-in shower, carefully selected fixtures and timeless finishes.",
     image:
       "https://images.unsplash.com/photo-1721824320926-3d4f13d9b5e8?q=80&w=1800&auto=format&fit=crop",
-    alt: "Renovated bathroom with walk-in shower, freestanding bath, and modern tiling.",
+    alt: "Bathroom with walk-in shower, freestanding bath and modern tiling.",
   },
   {
     number: "03",
@@ -41,10 +41,10 @@ const projects = [
     location: "Naas",
     category: "Full Renovation",
     description:
-      "A full renovation that modernised every room while preserving the warmth and character of the original home.",
+      "A whole-home renovation bringing a more contemporary feel to each room while retaining the character of the original property.",
     image:
       "https://images.unsplash.com/photo-1605146769289-440113cc3d00?q=80&w=1800&auto=format&fit=crop",
-    alt: "Renovated family home exterior with fresh render, landscaping, and a new front door.",
+    alt: "Residential home exterior with fresh render and landscaping.",
   },
 ];
 
@@ -119,9 +119,9 @@ export function Projects() {
               "max-w-sm text-[#686D64] md:pb-1"
             )}
           >
-            Every transformation has a story.
-            Explore a selection of spaces shaped
-            around the way people live.
+            Explore a selection of renovation projects, from
+            carefully planned kitchens and bathrooms to complete
+            home transformations.
           </p>
         </motion.div>
 
@@ -225,19 +225,6 @@ export function Projects() {
                       <p className="mt-5 max-w-md text-[15px] leading-[1.9] text-[#686D64]">
                         {project.description}
                       </p>
-
-                      {/* PROJECT INDEX */}
-                      <div className="mt-8 flex items-center gap-4">
-                        <span className="text-xs font-semibold tracking-[0.12em] text-[#193B2D]">
-                          {project.number}
-                        </span>
-
-                        <span className="h-px w-12 bg-[#D6A18A]" />
-
-                        <span className="text-[10px] font-medium uppercase tracking-[0.17em] text-[#686D64]">
-                          Selected work
-                        </span>
-                      </div>
 
                     </motion.div>
                   </motion.div>

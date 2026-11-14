@@ -167,8 +167,7 @@ export function Hero() {
             />
 
             <span>
-              Renovating homes across Dublin, Bray, Naas,
-              Kildare, Wicklow & Meath
+              Serving homeowners across Dublin, Kildare, Wicklow & Meath
             </span>
           </motion.div>
 
@@ -225,10 +224,7 @@ export function Hero() {
               "md:mx-0"
             )}
           >
-            From bespoke kitchens and luxury bathrooms to
-            complete home transformations, we bring thoughtful
-            design, skilled craftsmanship and clear communication
-            to every project.
+            From kitchen and bathroom renovations to home extensions and complete transformations, we bring careful planning, quality craftsmanship and clear communication to every stage of your project.
           </motion.p>
 
           {/* Calls to action */}

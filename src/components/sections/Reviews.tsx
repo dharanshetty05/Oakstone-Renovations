@@ -222,10 +222,9 @@ export function Reviews() {
               "w-full max-w-lg text-[#686D64] md:w-[43%] md:pb-1"
             )}
           >
-            A renovation is about more than the finished
-            space. It's about the experience along the way.
-            Here's what homeowners across {areaText} have
-            shared.
+            The finished result matters, but so does everything
+            that goes into getting there. Here's what homeowners
+            have shared about their experience with Oakstone.
           </p>
         </motion.div>
 

@@ -11,19 +11,19 @@ const principles = [
     number: "01",
     title: "A space that works as well as it looks.",
     description:
-      "A beautiful room still needs to work for everyday life. The layout, storage and practical details should make sense for the people who call it home.",
+      "From the layout and storage to lighting and everyday movement, the details should work around how you actually use your home.",
   },
   {
     number: "02",
     title: "Every choice has a purpose.",
     description:
-      "Materials, proportions, lighting and finishes all shape the result. Each decision should work together to create a space that feels considered.",
+      "Materials, proportions and finishes should complement one another, creating a cohesive result rather than a collection of disconnected choices.",
   },
   {
     number: "03",
     title: "Clear conversations, throughout.",
     description:
-      "Renovations involve decisions at every stage. Straightforward communication helps you understand your options, the work involved and what comes next.",
+      "From initial discussions to decisions during the work, you should know what's happening, what needs your input and what comes next.",
   },
 ];
 
@@ -121,9 +121,11 @@ export function WhyChooseUs() {
               "w-full max-w-[500px] leading-[1.85] text-[#686D64] md:justify-self-end"
             )}
           >
-            It takes more than a beautiful finish.
-            Thoughtful decisions, quality craftsmanship
-            and clear communication shape the entire experience.
+            
+The quality of a renovation is about more than the
+finished room. It's also in the planning, the decisions
+along the way and the care taken with every detail.
+
           </motion.p>
         </div>
 
@@ -169,7 +171,7 @@ export function WhyChooseUs() {
 
               <motion.p
                 variants={reduceMotion ? undefined : childVariants}
-                className="max-w-[490px] font-[family-name:var(--font-manrope)] text-[13px] leading-[1.9] text-[#686D64] sm:text-sm lg:justify-self-end"
+                className="max-w-[490px] font-[family-name:var(--font-manrope)] text-[14px] leading-[1.85] text-[#686D64] sm:text-[15px] lg:justify-self-end"
               >
                 {principle.description}
               </motion.p>

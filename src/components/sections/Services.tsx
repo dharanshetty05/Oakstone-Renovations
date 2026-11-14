@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -12,7 +11,8 @@ const services = [
     number: "01",
     title: "Kitchen Renovations",
     description:
-      "Bespoke kitchens, considered layouts and beautiful finishes designed around the way you live.",
+      "Practical layouts, considered storage and carefully chosen finishes, planned around how you cook, gather and use the space.",
+    cta: "Discuss your kitchen",
     image:
       "https://images.unsplash.com/photo-1682888813913-e13f18692019?auto=format&fit=crop&w=1600&q=90",
     alt: "Contemporary kitchen featuring a marble island and bespoke cabinetry.",
@@ -22,17 +22,19 @@ const services = [
     number: "02",
     title: "Bathroom Renovations",
     description:
-      "Refined materials, elegant details and thoughtfully designed spaces for everyday comfort.",
+      "Thoughtful layouts, durable materials and well-resolved details to make the most of your space.",
+    cta: "Discuss your bathroom",
     image:
       "https://images.unsplash.com/photo-1771929662486-f793e08f0f16?auto=format&fit=crop&w=1400&q=90",
-    alt: "Luxury bathroom with marble finishes and a glass walk-in shower.",
+    alt: "Bathroom with marble finishes and a glass walk-in shower.",
     layout: "md:col-span-5",
   },
   {
     number: "03",
     title: "Home Extensions",
     description:
-      "Create more room to live with carefully planned extensions that complement your home.",
+      "Create the extra space you need with an extension designed to sit naturally alongside your existing home.",
+    cta: "Discuss an extension",
     image:
       "https://images.unsplash.com/photo-1760067537293-6b30141d6a52?auto=format&fit=crop&w=1400&q=90",
     alt: "Contemporary residential architecture with a landscaped garden.",
@@ -42,13 +44,15 @@ const services = [
     number: "04",
     title: "Full Home Renovations",
     description:
-      "Transform your entire property with cohesive design and craftsmanship from room to room.",
+      "Bring your home together with a coordinated renovation, from the overall layout to the finishes that connect each room.",
+    cta: "Discuss your renovation",
     image:
       "https://images.unsplash.com/photo-1586982599726-11708daaceca?auto=format&fit=crop&w=1600&q=90",
-    alt: "Beautifully renovated residential home surrounded by greenery.",
+    alt: "Renovated residential home surrounded by greenery.",
     layout: "md:col-span-7",
   },
 ];
+
 
 function ArrowIcon() {
   return (
@@ -258,9 +262,11 @@ export function Services() {
                 "leading-[1.85] text-[#686D64]"
               )}
             >
-              From a single room to a complete transformation,
-              we bring thoughtful design and skilled
-              craftsmanship to every part of your home.
+              
+Whether you're updating one room or rethinking your
+entire home, we focus on the practical details that
+make a space work well every day.
+
             </motion.p>
           </div>
 
@@ -398,7 +404,7 @@ export function Services() {
                         "focus-visible:ring-2 focus-visible:ring-[#D6A18A]"
                       )}
                     >
-                      Discuss your project
+                      {service.cta}
 
                       <span
                         aria-hidden="true"
