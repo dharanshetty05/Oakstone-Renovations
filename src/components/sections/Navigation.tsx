@@ -1,231 +1,620 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { Menu, X } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
-import { Button } from "@/components/ui/Button";
-import { company } from "@/constants/company";
-import { navigation } from "@/constants/navigation";
-import { colors } from "@/design/colors";
-import { layout } from "@/design/layout";
-import { typography } from "@/design/typography";
-import { cn } from "@/lib/utils";
 
-const SCROLL_THRESHOLD = 50;
+"use client";
+
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from "react";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  useScroll,
+  useMotionValueEvent,
+} from "motion/react";
+import { Menu, X } from "lucide-react";
+
+const NAV_ITEMS = [
+  { name: "Services", link: "#services" },
+  { name: "Projects", link: "#projects" },
+  { name: "Why Choose Us", link: "#why-choose-us" },
+  { name: "Reviews", link: "#reviews" },
+] as const;
+
+const BRAND_NAME = "Oakstone Renovations";
+const CTA_LABEL = "Get a Free Quote";
+const CTA_LINK = "#contact";
+
+const SCROLL_THRESHOLD = 72;
+
+const INTRO_SESSION_KEY = "oakstone-intro-played";
+const INTRO_HOLD_MS = 600;
+const INTRO_MOVE_MS = 650;
+const INTRO_SETTLE_MS = 120;
+const INTRO_FADE_MS = 320;
+
+const INTRO_EASE_MOVE: [number, number, number, number] = [
+  0.65, 0, 0.35, 1,
+];
+const INTRO_EASE_IN: [number, number, number, number] = [
+  0.16, 1, 0.3, 1,
+];
+const INTRO_EASE_OUT: [number, number, number, number] = [
+  0.4, 0, 0.2, 1,
+];
+
+type IntroPhase = "pending" | "intro" | "moving" | "done" | "skip";
+
+type NavbarTransition = {
+  duration?: number;
+  type?: "spring" | "tween";
+  stiffness?: number;
+  damping?: number;
+  mass?: number;
+};
+
+function scrollToSection(
+  event: React.MouseEvent<HTMLAnchorElement>,
+  sectionId: string,
+  onClose?: () => void,
+) {
+  event.preventDefault();
+
+  document.getElementById(sectionId)?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+
+  onClose?.();
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                  Navbar                                    */
+/* -------------------------------------------------------------------------- */
 
 export function Navigation() {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const shouldReduceMotion = useReducedMotion();
+  const [navRevealed, setNavRevealed] = useState(false);
+
+  const { scrollY } = useScroll();
+  const prefersReducedMotion = useReducedMotion();
+
+  const desktopLogoRef = useRef<HTMLAnchorElement>(null);
+  const mobileLogoRef = useRef<HTMLAnchorElement>(null);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setScrolled(latest > SCROLL_THRESHOLD);
+  });
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > SCROLL_THRESHOLD);
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setIsMobileMenuOpen(false);
     };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isMobileMenuOpen) {
+    if (!isMobileMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
         setIsMobileMenuOpen(false);
-        menuButtonRef.current?.focus();
       }
     };
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMobileMenuOpen]);
 
-  // Lock body scroll while the mobile drawer is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      const previousOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = previousOverflow;
-      };
-    }
-  }, [isMobileMenuOpen]);
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
 
-  const closeMenu = () => setIsMobileMenuOpen(false);
+  const revealNav = useCallback(() => {
+    setNavRevealed(true);
+    window.dispatchEvent(new Event("oakstone:intro-complete"));
+  }, []);
 
-  const mobileNavContainer: Variants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.05,
-        delayChildren: shouldReduceMotion ? 0 : 0.15,
-      },
-    },
-  };
-
-  const mobileNavItem: Variants = {
-    hidden: { opacity: 0, x: shouldReduceMotion ? 0 : 16 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: shouldReduceMotion ? 0 : 0.3, ease: "easeOut" },
-    },
-  };
+  const transition: NavbarTransition = prefersReducedMotion
+    ? { duration: 0 }
+    : { type: "spring", stiffness: 220, damping: 32, mass: 0.6 };
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 h-20 border-b transition-colors duration-200 ease-out",
-        isScrolled
-          ? "border-border bg-white/95 shadow-[0_1px_2px_rgba(15,23,42,0.06)] backdrop-saturate-150"
-          : "border-transparent bg-transparent"
-      )}
+    <>
+      <IntroLogo
+        desktopTargetRef={desktopLogoRef}
+        mobileTargetRef={mobileLogoRef}
+        onSettle={revealNav}
+      />
+
+      <header className="fixed inset-x-0 top-0 z-50">
+        <DesktopNavbar
+          scrolled={scrolled}
+          transition={transition}
+          navRevealed={navRevealed}
+          logoRef={desktopLogoRef}
+        />
+
+        <MobileNavbar
+          scrolled={scrolled}
+          transition={transition}
+          isOpen={isMobileMenuOpen}
+          onToggle={() => setIsMobileMenuOpen((prev) => !prev)}
+          onClose={closeMobileMenu}
+          reducedMotion={Boolean(prefersReducedMotion)}
+          navRevealed={navRevealed}
+          logoRef={mobileLogoRef}
+        />
+      </header>
+    </>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               Desktop Navbar                               */
+/* -------------------------------------------------------------------------- */
+
+function DesktopNavbar({
+  scrolled,
+  transition,
+  navRevealed,
+  logoRef,
+}: {
+  scrolled: boolean;
+  transition: NavbarTransition;
+  navRevealed: boolean;
+  logoRef: RefObject<HTMLAnchorElement | null>;
+}) {
+  return (
+    <motion.div
+      animate={{
+        width: scrolled ? "92%" : "100%",
+        marginTop: scrolled ? 12 : 0,
+        paddingLeft: scrolled ? 20 : 32,
+        paddingRight: scrolled ? 20 : 32,
+        paddingTop: scrolled ? 10 : 18,
+        paddingBottom: scrolled ? 10 : 18,
+        backgroundColor: scrolled
+          ? "rgba(244, 241, 235, 0.88)"
+          : "rgba(244, 241, 235, 0)",
+        borderColor: scrolled
+          ? "rgba(38, 37, 34, 0.09)"
+          : "rgba(38, 37, 34, 0)",
+        boxShadow: scrolled
+          ? "0 8px 30px rgba(38, 37, 34, 0.06)"
+          : "0 0 0 rgba(0, 0, 0, 0)",
+        backdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
+      }}
+      transition={transition}
+      className="relative mx-auto hidden max-w-6xl flex-row items-center justify-between rounded-full border lg:flex"
+      style={{
+        WebkitBackdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
+      }}
     >
-      <div
-        className={cn(
-          layout.container,
-          "grid h-full grid-cols-[auto_1fr_auto] items-center gap-6 lg:grid-cols-3"
-        )}
+      <Logo logoRef={logoRef} scrolled={scrolled} />
+
+      <DesktopNavLinks scrolled={scrolled} />
+
+      <motion.div
+        initial={{ opacity: 0, y: -6 }}
+        animate={
+          navRevealed
+            ? { opacity: 1, y: 0 }
+            : { opacity: 0, y: -6 }
+        }
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+        className="contents"
       >
-        {/* Logo */}
-        <Link
-          href="/"
-          className={cn(
-            typography.h4,
-            colors.heading,
-            "justify-self-start rounded-sm tracking-tight transition-opacity duration-200 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
-          )}
-        >
-          {company.name}
-        </Link>
-        {/* Desktop Navigation */}
-        <nav
-          aria-label="Main navigation"
-          className="hidden justify-self-center lg:flex lg:items-center lg:gap-10"
-        >
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "font-[family-name:var(--font-inter)] text-[15px] font-medium",
-                colors.body,
-                "rounded-sm transition-colors duration-200 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
-              )}
+        <NavbarCta href={CTA_LINK} className="px-5 py-2.5">
+          {CTA_LABEL}
+        </NavbarCta>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function DesktopNavLinks({ scrolled }: { scrolled: boolean }) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  return (
+    <nav
+      aria-label="Primary navigation"
+      className="absolute inset-0 hidden items-center justify-center gap-1 lg:flex"
+    >
+      <ul
+        onMouseLeave={() => setHoveredIndex(null)}
+        className="flex items-center gap-0.5 xl:gap-1"
+      >
+        {NAV_ITEMS.map((item, index) => (
+          <li key={item.name} className="relative">
+            <a
+              href={item.link}
+              onClick={(event) =>
+                scrollToSection(event, item.link.slice(1))
+              }
+              onMouseEnter={() => setHoveredIndex(index)}
+              className={`relative z-10 block rounded-full px-3 py-2 text-[13px] font-medium transition-colors duration-200 xl:px-3.5 xl:text-sm motion-reduce:transition-none ${
+                scrolled
+                  ? "text-neutral-600 hover:text-neutral-900 focus-visible:ring-offset-[#f4f1eb]"
+                  : "text-white hover:text-white/75 focus-visible:ring-offset-neutral-900"
+              } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2`}
             >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        {/* Desktop CTA */}
-        <motion.div
-          className="hidden justify-self-end lg:block"
-          whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-          whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
-        >
-          <Button>Get Free Quote</Button>
-        </motion.div>
-        {/* Mobile Toggle */}
+              {hoveredIndex === index && (
+                <motion.span
+                  layoutId="oakstone-desktop-nav-hover"
+                  className={`absolute inset-0 -z-10 rounded-full ${
+                    scrolled ? "bg-neutral-900/5" : "bg-white/10"
+                  }`}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                  }}
+                />
+              )}
+
+              {item.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                Mobile Navbar                               */
+/* -------------------------------------------------------------------------- */
+
+function MobileNavbar({
+  scrolled,
+  transition,
+  isOpen,
+  onToggle,
+  onClose,
+  reducedMotion,
+  navRevealed,
+  logoRef,
+}: {
+  scrolled: boolean;
+  transition: NavbarTransition;
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+  reducedMotion: boolean;
+  navRevealed: boolean;
+  logoRef: RefObject<HTMLAnchorElement | null>;
+}) {
+  return (
+    <motion.div
+      animate={{
+        width: scrolled ? "94%" : "100%",
+        marginTop: scrolled ? 10 : 0,
+        paddingLeft: scrolled ? 16 : 20,
+        paddingRight: scrolled ? 16 : 20,
+        paddingTop: 12,
+        paddingBottom: 12,
+        borderRadius: scrolled || isOpen ? 24 : 28,
+        backgroundColor: scrolled
+          ? "rgba(244, 241, 235, 0.94)"
+          : "rgba(244, 241, 235, 0)",
+        borderColor: scrolled
+          ? "rgba(38, 37, 34, 0.09)"
+          : "rgba(38, 37, 34, 0)",
+        boxShadow: scrolled
+          ? "0 8px 30px rgba(38, 37, 34, 0.06)"
+          : "0 0 0 rgba(0, 0, 0, 0)",
+        backdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
+      }}
+      transition={transition}
+      className="relative mx-auto flex w-full max-w-[calc(100vw-1.5rem)] flex-col border lg:hidden"
+      style={{
+        WebkitBackdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
+      }}
+    >
+      <div className="flex w-full flex-row items-center justify-between">
+        <Logo logoRef={logoRef} scrolled={scrolled} />
+
         <motion.button
-          ref={menuButtonRef}
           type="button"
-          aria-label={
-            isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"
-          }
-          aria-controls="mobile-navigation"
-          aria-expanded={isMobileMenuOpen}
-          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-          whileTap={shouldReduceMotion ? undefined : { scale: 0.92 }}
-          className={cn(
-            "relative col-start-3 inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-xl transition-colors duration-200",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
-            "hover:bg-surface lg:hidden"
-          )}
+          onClick={onToggle}
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isOpen}
+          aria-controls="oakstone-mobile-nav-menu"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: navRevealed ? 1 : 0 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 motion-reduce:transition-none ${
+            scrolled
+              ? "text-neutral-900 focus-visible:ring-offset-[#f4f1eb]"
+              : "text-white focus-visible:ring-offset-neutral-900"
+          }`}
         >
-          <AnimatePresence mode="wait" initial={false}>
-            {isMobileMenuOpen ? (
-              <motion.span
-                key="close"
-                className="absolute inset-0 flex items-center justify-center"
-                initial={{ opacity: 0, rotate: shouldReduceMotion ? 0 : -90 }}
-                animate={{ opacity: 1, rotate: 0 }}
-                exit={{ opacity: 0, rotate: shouldReduceMotion ? 0 : 90 }}
-                transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: "easeOut" }}
-              >
-                <X className="h-6 w-6" aria-hidden="true" />
-              </motion.span>
-            ) : (
-              <motion.span
-                key="menu"
-                className="absolute inset-0 flex items-center justify-center"
-                initial={{ opacity: 0, rotate: shouldReduceMotion ? 0 : 90 }}
-                animate={{ opacity: 1, rotate: 0 }}
-                exit={{ opacity: 0, rotate: shouldReduceMotion ? 0 : -90 }}
-                transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: "easeOut" }}
-              >
-                <Menu className="h-6 w-6" aria-hidden="true" />
-              </motion.span>
-            )}
-          </AnimatePresence>
+          {isOpen ? (
+            <X size={22} strokeWidth={1.8} />
+          ) : (
+            <Menu size={22} strokeWidth={1.8} />
+          )}
         </motion.button>
       </div>
-      {/* Mobile Scrim */}
-      <div
-        aria-hidden="true"
-        onClick={closeMenu}
-        className={cn(
-          "fixed inset-0 top-20 bg-secondary/20 transition-opacity duration-200 lg:hidden",
-          isMobileMenuOpen
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0"
+
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.nav
+            id="oakstone-mobile-nav-menu"
+            aria-label="Mobile navigation"
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: "auto", marginTop: 12 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            transition={
+              reducedMotion
+                ? { duration: 0 }
+                : { duration: 0.2, ease: "easeOut" }
+            }
+            className="flex w-full flex-col items-stretch gap-1 overflow-hidden rounded-2xl bg-[#f4f1eb] px-2 py-3"
+          >
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.name}
+                href={item.link}
+                onClick={(event) =>
+                  scrollToSection(event, item.link.slice(1), onClose)
+                }
+                className="w-full rounded-xl px-4 py-3 text-base font-medium text-neutral-900 transition-colors hover:bg-neutral-900/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/30 motion-reduce:transition-none"
+              >
+                {item.name}
+              </a>
+            ))}
+
+            <NavbarCta
+              href={CTA_LINK}
+              onClick={onClose}
+              className="mt-2 w-full py-3"
+            >
+              {CTA_LABEL}
+            </NavbarCta>
+          </motion.nav>
         )}
-      />
-      {/* Mobile Menu (side drawer) */}
-      <div
-        id="mobile-navigation"
-        className={cn(
-          "fixed inset-y-0 right-0 top-20 z-50 h-[calc(100vh-5rem)] w-full max-w-xs",
-          "border-l border-border bg-white shadow-[-4px_0_16px_rgba(15,23,42,0.08)]",
-          "transition-transform duration-200 ease-out lg:hidden",
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        )}
-      >
-        <nav
-          aria-label="Mobile navigation"
-          className="flex h-full flex-col px-6 py-8"
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Shared subparts                               */
+/* -------------------------------------------------------------------------- */
+
+function Logo({
+  logoRef,
+  scrolled,
+}: {
+  logoRef: RefObject<HTMLAnchorElement | null>;
+  scrolled: boolean;
+}) {
+  return (
+    <a
+      ref={logoRef}
+      href="#home"
+      onClick={(event) => {
+        event.preventDefault();
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }}
+      aria-label={`${BRAND_NAME} home`}
+      className={`relative z-10 flex items-center rounded-full px-1 py-1 text-lg font-semibold tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 ${
+        scrolled
+          ? "text-neutral-900 focus-visible:ring-offset-[#f4f1eb]"
+          : "text-white focus-visible:ring-offset-neutral-900"
+      }`}
+    >
+      {BRAND_NAME}
+    </a>
+  );
+}
+
+function NavbarCta({
+  href,
+  children,
+  className,
+  onClick,
+}: {
+  href: string;
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+}) {
+  return (
+    <a
+      href={href}
+      onClick={onClick}
+      className={`relative z-10 inline-flex items-center justify-center rounded-full bg-neutral-900 px-4 py-2 text-center text-sm font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4f1eb] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${className ?? ""}`}
+    >
+      {children}
+    </a>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Intro animation                               */
+/* -------------------------------------------------------------------------- */
+
+function getVisibleLogoTarget(
+  desktop: HTMLElement | null,
+  mobile: HTMLElement | null,
+): HTMLElement | null {
+  if (desktop && desktop.offsetWidth > 0) return desktop;
+  if (mobile && mobile.offsetWidth > 0) return mobile;
+  return null;
+}
+
+function IntroLogo({
+  desktopTargetRef,
+  mobileTargetRef,
+  onSettle,
+}: {
+  desktopTargetRef: RefObject<HTMLAnchorElement | null>;
+  mobileTargetRef: RefObject<HTMLAnchorElement | null>;
+  onSettle: () => void;
+}) {
+  const [phase, setPhase] = useState<IntroPhase>("pending");
+  const [offset, setOffset] = useState({ x: 0, y: 0, scale: 1 });
+  const sourceRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    let alreadyPlayed = false;
+
+    try {
+      alreadyPlayed =
+        sessionStorage.getItem(INTRO_SESSION_KEY) === "true";
+    } catch {
+      alreadyPlayed = false;
+    }
+
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (alreadyPlayed || reduced) {
+      onSettle();
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      setPhase("intro");
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [onSettle]);
+
+  useEffect(() => {
+    if (phase !== "intro") return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const timer = window.setTimeout(() => {
+      const target = getVisibleLogoTarget(
+        desktopTargetRef.current,
+        mobileTargetRef.current,
+      );
+
+      const source = sourceRef.current;
+
+      if (target && source) {
+        const targetRect = target.getBoundingClientRect();
+        const sourceRect = source.getBoundingClientRect();
+
+        setOffset({
+          x:
+            targetRect.left +
+            targetRect.width / 2 -
+            (sourceRect.left + sourceRect.width / 2),
+          y:
+            targetRect.top +
+            targetRect.height / 2 -
+            (sourceRect.top + sourceRect.height / 2),
+          scale:
+            sourceRect.width > 0
+              ? targetRect.width / sourceRect.width
+              : 1,
+        });
+      }
+
+      setPhase("moving");
+    }, INTRO_HOLD_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [phase, desktopTargetRef, mobileTargetRef]);
+
+  useEffect(() => {
+    if (phase !== "moving") return;
+
+    const previousOverflow = document.body.style.overflow;
+
+    const settleTimer = window.setTimeout(onSettle, INTRO_MOVE_MS);
+
+    const doneTimer = window.setTimeout(() => {
+      setPhase("done");
+      document.body.style.overflow = "";
+
+      try {
+        sessionStorage.setItem(INTRO_SESSION_KEY, "true");
+      } catch {
+        // Continue normally when session storage is unavailable.
+      }
+    }, INTRO_MOVE_MS + INTRO_SETTLE_MS);
+
+    return () => {
+      window.clearTimeout(settleTimer);
+      window.clearTimeout(doneTimer);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [phase, onSettle]);
+
+  if (phase === "pending" || phase === "skip") return null;
+
+  return (
+    <AnimatePresence>
+      {phase !== "done" && (
+        <motion.div
+          aria-hidden="true"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-[#f4f1eb]"
+          initial={{ opacity: 1 }}
+          exit={{
+            opacity: 0,
+            transition: {
+              duration: INTRO_FADE_MS / 1000,
+              ease: INTRO_EASE_OUT,
+            },
+          }}
         >
           <motion.div
-            className="flex flex-col gap-1"
-            initial="hidden"
-            animate={isMobileMenuOpen ? "visible" : "hidden"}
-            variants={mobileNavContainer}
+            ref={sourceRef}
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={
+              phase === "moving"
+                ? {
+                    opacity: 1,
+                    x: offset.x,
+                    y: offset.y,
+                    scale: offset.scale,
+                  }
+                : { opacity: 1, scale: 1 }
+            }
+            transition={
+              phase === "moving"
+                ? {
+                    duration: INTRO_MOVE_MS / 1000,
+                    ease: INTRO_EASE_MOVE,
+                  }
+                : {
+                    duration: 0.4,
+                    ease: INTRO_EASE_IN,
+                  }
+            }
+            className="px-6 text-center text-[clamp(1.75rem,7vw,3.25rem)] font-semibold tracking-tight text-neutral-900"
           >
-            {navigation.map((item) => (
-              <motion.div key={item.href} variants={mobileNavItem}>
-                <Link
-                  href={item.href}
-                  onClick={closeMenu}
-                  className={cn(
-                    "block font-[family-name:var(--font-inter)] text-base font-medium",
-                    colors.heading,
-                    "rounded-lg px-2 py-3 transition-colors duration-200 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                  )}
-                >
-                  {item.label}
-                </Link>
-              </motion.div>
-            ))}
+            {BRAND_NAME}
           </motion.div>
-          <motion.div
-            className="mt-8"
-            whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
-          >
-            <Button className="w-full" onClick={closeMenu}>
-              Get Free Quote
-            </Button>
-          </motion.div>
-        </nav>
-      </div>
-    </header>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
