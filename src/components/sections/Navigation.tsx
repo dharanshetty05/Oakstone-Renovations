@@ -48,11 +48,6 @@ function scrollToSection(
 ) {
   event.preventDefault();
 
-  document.getElementById(sectionId)?.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
-
   onClose?.();
 }
 

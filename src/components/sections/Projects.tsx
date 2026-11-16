@@ -77,6 +77,34 @@ export function Projects() {
     },
   };
 
+
+const imageRevealVariants: Variants = {
+  hidden: {
+    clipPath: "inset(0 0 100% 0)",
+  },
+  visible: {
+    clipPath: "inset(0 0 0% 0)",
+    transition: {
+      duration: shouldReduceMotion ? 0 : 1,
+      ease: easing,
+    },
+  },
+};
+
+const imageScaleVariants: Variants = {
+  hidden: {
+    scale: shouldReduceMotion ? 1 : 1.08,
+  },
+  visible: {
+    scale: 1,
+    transition: {
+      duration: shouldReduceMotion ? 0 : 1.2,
+      ease: easing,
+    },
+  },
+};
+
+
   const imageHover = shouldReduceMotion
     ? ""
     : "transition-transform duration-1000 ease-out group-hover:scale-[1.035]";
@@ -161,36 +189,47 @@ export function Projects() {
                     className="grid grid-cols-1 items-center gap-7 lg:grid-cols-12 lg:gap-12"
                   >
 
-                    {/* PROJECT IMAGE */}
-                    <motion.div
-                      variants={revealVariants}
-                      className={cn(
-                        "relative lg:col-span-7",
-                        reversed && "lg:order-2"
-                      )}
-                    >
-                      <div className="relative aspect-[16/10] overflow-hidden rounded-[16px] bg-[#E7E2D7] sm:rounded-[22px] lg:rounded-[26px]">
-                        <Image
-                          src={project.image}
-                          alt={project.alt}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 62vw"
-                          className={cn(
-                            "object-cover",
-                            imageHover
-                          )}
-                        />
+                    
+{/* PROJECT IMAGE */}
+<motion.div
+  variants={revealVariants}
+  className={cn(
+    "relative lg:col-span-7",
+    reversed && "lg:order-2"
+  )}
+>
+  <motion.div
+    variants={imageRevealVariants}
+    className="relative aspect-[16/10] overflow-hidden rounded-[16px] bg-[#E7E2D7] sm:rounded-[22px] lg:rounded-[26px]"
+  >
+    {/* IMAGE */}
+    <motion.div
+      variants={imageScaleVariants}
+      className="absolute inset-0"
+    >
+      <Image
+        src={project.image}
+        alt={project.alt}
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 62vw"
+        className={cn(
+          "object-cover",
+          imageHover
+        )}
+      />
+    </motion.div>
 
-                        {/* IMAGE INDEX */}
-                        <div className="absolute left-5 top-5 flex items-center gap-3 sm:left-7 sm:top-7">
-                          <span className="text-xs font-semibold tracking-[0.16em] text-white">
-                            {project.number}
-                          </span>
+    {/* IMAGE INDEX */}
+    <div className="absolute left-5 top-5 flex items-center gap-3 sm:left-7 sm:top-7">
+      <span className="text-xs font-semibold tracking-[0.16em] text-white">
+        {project.number}
+      </span>
 
-                          <span className="h-px w-9 bg-white/80" />
-                        </div>
-                      </div>
-                    </motion.div>
+      <span className="h-px w-9 bg-white/80" />
+    </div>
+  </motion.div>
+</motion.div>
+
 
                     {/* PROJECT DETAILS */}
                     <motion.div
