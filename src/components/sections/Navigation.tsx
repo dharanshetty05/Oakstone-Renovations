@@ -1,10 +1,8 @@
-
 "use client";
 
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   type ReactNode,
@@ -18,6 +16,7 @@ import {
   useMotionValueEvent,
 } from "motion/react";
 import { Menu, X } from "lucide-react";
+import { IntroOverlay } from "./IntroOverlay";
 
 const NAV_ITEMS = [
   { name: "Services", link: "#services" },
@@ -31,22 +30,6 @@ const CTA_LABEL = "Get a Free Quote";
 const CTA_LINK = "#contact";
 
 const SCROLL_THRESHOLD = 72;
-
-const INTRO_SESSION_KEY = "oakstone-intro-played";
-const INTRO_HOLD_MS = 600;
-const INTRO_MOVE_MS = 650;
-const INTRO_SETTLE_MS = 120;
-const INTRO_FADE_MS = 320;
-
-const INTRO_EASE_MOVE: [number, number, number, number] = [
-  0.65, 0, 0.35, 1,
-];
-const INTRO_EASE_IN: [number, number, number, number] = [
-  0.16, 1, 0.3, 1,
-];
-const INTRO_EASE_OUT: [number, number, number, number] = [
-  0.4, 0, 0.2, 1,
-];
 
 type IntroPhase = "pending" | "intro" | "moving" | "done" | "skip";
 
@@ -133,12 +116,9 @@ export function Navigation() {
 
   return (
     <>
-      <IntroLogo
-        desktopTargetRef={desktopLogoRef}
-        mobileTargetRef={mobileLogoRef}
-        onSettle={revealNav}
-      />
 
+      <IntroOverlay onComplete={revealNav} />
+      
       <header className="fixed inset-x-0 top-0 z-50">
         <DesktopNavbar
           scrolled={scrolled}
@@ -445,176 +425,5 @@ function NavbarCta({
     >
       {children}
     </a>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*                              Intro animation                               */
-/* -------------------------------------------------------------------------- */
-
-function getVisibleLogoTarget(
-  desktop: HTMLElement | null,
-  mobile: HTMLElement | null,
-): HTMLElement | null {
-  if (desktop && desktop.offsetWidth > 0) return desktop;
-  if (mobile && mobile.offsetWidth > 0) return mobile;
-  return null;
-}
-
-function IntroLogo({
-  desktopTargetRef,
-  mobileTargetRef,
-  onSettle,
-}: {
-  desktopTargetRef: RefObject<HTMLAnchorElement | null>;
-  mobileTargetRef: RefObject<HTMLAnchorElement | null>;
-  onSettle: () => void;
-}) {
-  const [phase, setPhase] = useState<IntroPhase>("pending");
-  const [offset, setOffset] = useState({ x: 0, y: 0, scale: 1 });
-  const sourceRef = useRef<HTMLDivElement>(null);
-
-  useLayoutEffect(() => {
-    let alreadyPlayed = false;
-
-    try {
-      alreadyPlayed =
-        sessionStorage.getItem(INTRO_SESSION_KEY) === "true";
-    } catch {
-      alreadyPlayed = false;
-    }
-
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    if (alreadyPlayed || reduced) {
-      onSettle();
-      return;
-    }
-
-    const frame = window.requestAnimationFrame(() => {
-      setPhase("intro");
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [onSettle]);
-
-  useEffect(() => {
-    if (phase !== "intro") return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const timer = window.setTimeout(() => {
-      const target = getVisibleLogoTarget(
-        desktopTargetRef.current,
-        mobileTargetRef.current,
-      );
-
-      const source = sourceRef.current;
-
-      if (target && source) {
-        const targetRect = target.getBoundingClientRect();
-        const sourceRect = source.getBoundingClientRect();
-
-        setOffset({
-          x:
-            targetRect.left +
-            targetRect.width / 2 -
-            (sourceRect.left + sourceRect.width / 2),
-          y:
-            targetRect.top +
-            targetRect.height / 2 -
-            (sourceRect.top + sourceRect.height / 2),
-          scale:
-            sourceRect.width > 0
-              ? targetRect.width / sourceRect.width
-              : 1,
-        });
-      }
-
-      setPhase("moving");
-    }, INTRO_HOLD_MS);
-
-    return () => {
-      window.clearTimeout(timer);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [phase, desktopTargetRef, mobileTargetRef]);
-
-  useEffect(() => {
-    if (phase !== "moving") return;
-
-    const previousOverflow = document.body.style.overflow;
-
-    const settleTimer = window.setTimeout(onSettle, INTRO_MOVE_MS);
-
-    const doneTimer = window.setTimeout(() => {
-      setPhase("done");
-      document.body.style.overflow = "";
-
-      try {
-        sessionStorage.setItem(INTRO_SESSION_KEY, "true");
-      } catch {
-        // Continue normally when session storage is unavailable.
-      }
-    }, INTRO_MOVE_MS + INTRO_SETTLE_MS);
-
-    return () => {
-      window.clearTimeout(settleTimer);
-      window.clearTimeout(doneTimer);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [phase, onSettle]);
-
-  if (phase === "pending" || phase === "skip") return null;
-
-  return (
-    <AnimatePresence>
-      {phase !== "done" && (
-        <motion.div
-          aria-hidden="true"
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-[#f4f1eb]"
-          initial={{ opacity: 1 }}
-          exit={{
-            opacity: 0,
-            transition: {
-              duration: INTRO_FADE_MS / 1000,
-              ease: INTRO_EASE_OUT,
-            },
-          }}
-        >
-          <motion.div
-            ref={sourceRef}
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={
-              phase === "moving"
-                ? {
-                    opacity: 1,
-                    x: offset.x,
-                    y: offset.y,
-                    scale: offset.scale,
-                  }
-                : { opacity: 1, scale: 1 }
-            }
-            transition={
-              phase === "moving"
-                ? {
-                    duration: INTRO_MOVE_MS / 1000,
-                    ease: INTRO_EASE_MOVE,
-                  }
-                : {
-                    duration: 0.4,
-                    ease: INTRO_EASE_IN,
-                  }
-            }
-            className="px-6 text-center text-[clamp(1.75rem,7vw,3.25rem)] font-semibold tracking-tight text-neutral-900"
-          >
-            {BRAND_NAME}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
   );
 }

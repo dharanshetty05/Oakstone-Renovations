@@ -2,6 +2,7 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { layout } from "@/design/layout";
 import { typography } from "@/design/typography";
@@ -14,6 +15,44 @@ const headlineLines = [
 
 export function Hero() {
   const shouldReduceMotion = useReducedMotion();
+
+  const [introComplete, setIntroComplete] = useState(false);
+
+  useEffect(() => {
+    // Respect reduced motion.
+    if (shouldReduceMotion) {
+      setIntroComplete(true);
+      return;
+    }
+
+    // If the intro has already played in this session,
+    // show the hero immediately.
+    try {
+      if (sessionStorage.getItem("oakstone-intro-played") === "true") {
+        setIntroComplete(true);
+        return;
+      }
+    } catch {
+      // Fall back to listening for the intro completion event.
+    }
+
+    // Wait for the intro overlay to finish.
+    const handleIntroComplete = () => {
+      setIntroComplete(true);
+    };
+
+    window.addEventListener(
+      "oakstone:intro-complete",
+      handleIntroComplete
+    );
+
+    return () => {
+      window.removeEventListener(
+        "oakstone:intro-complete",
+        handleIntroComplete
+      );
+    };
+  }, [shouldReduceMotion]);
 
   const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -91,10 +130,17 @@ export function Hero() {
           opacity: 0,
           scale: shouldReduceMotion ? 1 : 1.025,
         }}
-        animate={{
-          opacity: 1,
-          scale: 1,
-        }}
+        animate={
+          introComplete
+            ? {
+                opacity: 1,
+                scale: 1,
+              }
+            : {
+                opacity: 0,
+                scale: shouldReduceMotion ? 1 : 1.025,
+              }
+        }
         transition={{
           duration: shouldReduceMotion ? 0 : 1.5,
           ease,
@@ -145,7 +191,7 @@ export function Hero() {
         <motion.div
           variants={contentVariants}
           initial="hidden"
-          animate="visible"
+          animate={introComplete ? "visible" : "hidden"}
           className={cn(
             "max-w-[1100px]",
             "text-center md:text-left"
