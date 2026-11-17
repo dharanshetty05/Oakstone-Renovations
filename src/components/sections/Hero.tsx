@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -15,7 +14,6 @@ const headlineLines = [
 
 export function Hero() {
   const shouldReduceMotion = useReducedMotion();
-
   const [introComplete, setIntroComplete] = useState(false);
 
   useEffect(() => {
@@ -24,9 +22,6 @@ export function Hero() {
       setIntroComplete(true);
       return;
     }
-
-    // If the intro has already played in this session,
-    // show the hero immediately.
     try {
       if (sessionStorage.getItem("oakstone-intro-played") === "true") {
         setIntroComplete(true);
@@ -162,11 +157,11 @@ export function Hero() {
       <div
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute inset-y-0 left-0 z-[1]",
+          "pointer-events-none absolute inset-y-0 left-0 z-1",
           "hidden w-[76%] md:block lg:w-[70%]",
-          "bg-gradient-to-r",
+          "bg-linear-to-r",
           "from-[#14251D]/95 via-[#17291F]/80",
-          "via-[48%] to-transparent"
+          "via-48% to-transparent"
         )}
       />
 
@@ -175,7 +170,7 @@ export function Hero() {
         aria-hidden="true"
         className={cn(
           "pointer-events-none absolute inset-0 z-[1] md:hidden",
-          "bg-gradient-to-b",
+          "bg-linear-to-b",
           "from-[#14251D]/85 via-[#14251D]/65 to-[#14251D]/45"
         )}
       />
@@ -193,7 +188,7 @@ export function Hero() {
           initial="hidden"
           animate={introComplete ? "visible" : "hidden"}
           className={cn(
-            "max-w-[1100px]",
+            "max-w-275",
             "text-center md:text-left"
           )}
         >
@@ -264,7 +259,7 @@ export function Hero() {
             variants={itemVariants}
             className={cn(
               typography.small,
-              "mx-auto mt-7 max-w-[620px]",
+              "mx-auto mt-7 max-w-155",
               "text-pretty leading-[1.8]",
               "text-[#F3EEE3]/85",
               "md:mx-0"
