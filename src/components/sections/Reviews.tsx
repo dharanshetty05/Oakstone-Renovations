@@ -222,9 +222,7 @@ export function Reviews() {
               "w-full max-w-lg text-[#686D64] md:w-[43%] md:pb-1"
             )}
           >
-            The finished result matters, but so does everything
-            that goes into getting there. Here's what homeowners
-            have shared about their experience with Oakstone.
+            A renovation is about more than the finished space. It's about the care, communication and attention to detail throughout the journey. Here's what homeowners have shared about their experience with Oakstone.
           </p>
         </motion.div>
 
@@ -303,7 +301,7 @@ export function Reviews() {
             </h3>
 
             <p className="mt-4 text-sm leading-relaxed text-white/70 md:whitespace-nowrap">
-              Tell us what you're planning. We'll talk through the next steps.
+              Share a little about your plans and let's discuss how we can bring them to life.
             </p>
           </div>
 
