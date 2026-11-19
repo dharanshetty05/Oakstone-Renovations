@@ -8,6 +8,7 @@ import { Projects } from "@/components/sections/Projects";
 import { Reviews } from "@/components/sections/Reviews";
 import { Services } from "@/components/sections/Services";
 import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
+import { FAQ } from "@/components/sections/FAQ";
 
 export default function HomePage() {
   const structuredData = {
@@ -43,6 +44,7 @@ export default function HomePage() {
         <Projects />
         <WhyChooseUs />
         <Reviews />
+        <FAQ />
         {/* <CTA /> */}
       </main>
 
