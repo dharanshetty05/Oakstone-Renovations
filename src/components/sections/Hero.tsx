@@ -169,7 +169,7 @@ export function Hero() {
       <div
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute inset-0 z-[1] md:hidden",
+          "pointer-events-none absolute inset-0 z-1 md:hidden",
           "bg-linear-to-b",
           "from-[#14251D]/85 via-[#14251D]/65 to-[#14251D]/45"
         )}

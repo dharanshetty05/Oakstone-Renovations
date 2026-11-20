@@ -76,7 +76,7 @@ export function Footer() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-[-0.08em] select-none overflow-hidden whitespace-nowrap text-center"
       >
-        <span className="inline-block text-[clamp(4rem,11vw,10rem)] font-semibold leading-[0.72] tracking-[-0.075em] text-[#242C26]/[0.045]">
+        <span className="inline-block text-[clamp(4rem,11vw,10rem)] font-semibold leading-[0.72] tracking-[-0.075em] text-[#242C26]/4.5">
           Oakstone
         </span>
       </div>
