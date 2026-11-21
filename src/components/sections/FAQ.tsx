@@ -50,20 +50,39 @@ const faqs = [
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const introVariants = {
+// INTRODUCTION ANIMATIONS
+
+const headingVariants = {
   hidden: {
     opacity: 0,
-    y: 24,
+    x: -60,
   },
   visible: {
     opacity: 1,
-    y: 0,
+    x: 0,
     transition: {
-      duration: 0.85,
+      duration: 1.1,
       ease,
     },
   },
 };
+
+const descriptionVariants = {
+  hidden: {
+    opacity: 0,
+    x: 60,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 1.1,
+      ease,
+    },
+  },
+};
+
+// FAQ ANSWER ANIMATION
 
 const answerVariants = {
   hidden: {
@@ -105,7 +124,7 @@ export function FAQ() {
             initial={reduceMotion ? false : "hidden"}
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            variants={introVariants}
+            variants={headingVariants}
           >
             <h2
               id="faq-heading"
@@ -127,10 +146,7 @@ export function FAQ() {
             initial={reduceMotion ? false : "hidden"}
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            variants={introVariants}
-            transition={{
-              delay: reduceMotion ? 0 : 0.16,
-            }}
+            variants={descriptionVariants}
             className={cn(
               typography.sectionDescription,
               "w-full max-w-[500px] leading-[1.85] text-[#686D64] md:justify-self-end"
@@ -240,9 +256,7 @@ export function FAQ() {
 
                   {/* ANSWER */}
 
-                  <div
-                    className="col-start-2 col-end-4 min-w-0"
-                  >
+                  <div className="col-start-2 col-end-4 min-w-0">
                     <AnimatePresence initial={false}>
                       {isOpen && (
                         <motion.div
@@ -329,7 +343,7 @@ export function FAQ() {
           initial={reduceMotion ? false : "hidden"}
           whileInView="visible"
           viewport={{ once: true, amount: 0.4 }}
-          variants={introVariants}
+          variants={answerVariants}
           className="mt-10 text-center font-[family-name:var(--font-manrope)] text-[12px] leading-[1.8] text-[#686D64] sm:mt-12 sm:text-[13px]"
         >
           Have another question?{" "}
