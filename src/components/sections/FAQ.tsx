@@ -82,6 +82,23 @@ const descriptionVariants = {
   },
 };
 
+// FAQ BODY ANIMATION
+
+const faqItemVariants = {
+  hidden: {
+    opacity: 0,
+    y: 18,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.65,
+      ease,
+    },
+  },
+};
+
 // FAQ ANSWER ANIMATION
 
 const answerVariants = {
@@ -161,7 +178,21 @@ export function FAQ() {
 
         {/* FAQ ACCORDION */}
 
-        <div className="flex flex-col">
+        <motion.div
+          className="flex flex-col"
+          initial={reduceMotion ? false : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                delayChildren: reduceMotion ? 0 : 0.55,
+                staggerChildren: reduceMotion ? 0 : 0.16,
+              },
+            },
+          }}
+        >
 
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
@@ -171,20 +202,7 @@ export function FAQ() {
             return (
               <motion.article
                 key={faq.number}
-                initial={reduceMotion ? false : "hidden"}
-                whileInView="visible"
-                viewport={{
-                  once: true,
-                  amount: 0.25,
-                }}
-                variants={{
-                  hidden: {},
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.1,
-                    },
-                  },
-                }}
+                variants={faqItemVariants}
                 className={cn(
                   "group relative border-b border-transparent px-3 py-2 transition-colors duration-500 hover:bg-[#FBF9F3] sm:px-3",
                   "-mx-3"
@@ -335,7 +353,7 @@ export function FAQ() {
             );
           })}
 
-        </div>
+        </motion.div>
 
         {/* CLOSING NOTE */}
 
