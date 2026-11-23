@@ -29,34 +29,44 @@ const principles = [
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const introVariants = {
+// INTRODUCTION ANIMATIONS
+
+const headingVariants = {
   hidden: {
     opacity: 0,
-    y: 24,
+    x: -60,
   },
   visible: {
     opacity: 1,
-    y: 0,
+    x: 0,
     transition: {
-      duration: 0.85,
+      duration: 1.1,
       ease,
     },
   },
 };
 
-const rowVariants = {
-  hidden: {},
+const descriptionVariants = {
+  hidden: {
+    opacity: 0,
+    x: 60,
+  },
   visible: {
+    opacity: 1,
+    x: 0,
     transition: {
-      staggerChildren: 0.13,
+      duration: 1.1,
+      ease,
     },
   },
 };
 
-const childVariants = {
+// PRINCIPLE BODY ANIMATION
+
+const principleVariants = {
   hidden: {
     opacity: 0,
-    y: 14,
+    y: 18,
   },
   visible: {
     opacity: 1,
@@ -64,6 +74,24 @@ const childVariants = {
     transition: {
       duration: 0.65,
       ease,
+    },
+  },
+};
+
+// PRINCIPLE CONTENT ANIMATION
+
+const childVariants = {
+  hidden: {
+    opacity: 0,
+    y: 8,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.45,
+      ease,
+      delay: 0.08,
     },
   },
 };
@@ -84,13 +112,13 @@ export function WhyChooseUs() {
 
         <div className="grid grid-cols-1 items-end gap-6 border-b border-[#E7E1D5] pb-10 md:grid-cols-[1.2fr_0.8fr] md:gap-12 lg:pb-14">
 
-          {/* Main heading */}
+          {/* MAIN HEADING */}
 
           <motion.div
             initial={reduceMotion ? false : "hidden"}
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            variants={introVariants}
+            variants={headingVariants}
           >
             <h2
               id="why-choose-us-heading"
@@ -106,43 +134,46 @@ export function WhyChooseUs() {
             </h2>
           </motion.div>
 
-          {/* Supporting description */}
+          {/* SUPPORTING DESCRIPTION */}
 
           <motion.p
             initial={reduceMotion ? false : "hidden"}
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            variants={introVariants}
-            transition={{
-              delay: reduceMotion ? 0 : 0.16,
-            }}
+            variants={descriptionVariants}
             className={cn(
               typography.sectionDescription,
               "w-full max-w-[500px] leading-[1.85] text-[#686D64] md:justify-self-end"
             )}
           >
-            
-The quality of a renovation is about more than the
-finished room. It's also in the planning, the decisions
-along the way and the care taken with every detail.
-
+            The quality of a renovation is about more than the
+            finished room. It's also in the planning, the decisions
+            along the way and the care taken with every detail.
           </motion.p>
         </div>
 
         {/* THREE PRINCIPLES */}
 
-        <div className="flex flex-col">
+        <motion.div
+          className="flex flex-col"
+          initial={reduceMotion ? false : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                delayChildren: reduceMotion ? 0 : 1.15,
+                staggerChildren: reduceMotion ? 0 : 0.16,
+              },
+            },
+          }}
+        >
 
           {principles.map((principle) => (
             <motion.article
               key={principle.number}
-              initial={reduceMotion ? false : "hidden"}
-              whileInView="visible"
-              viewport={{
-                once: true,
-                amount: 0.35,
-              }}
-              variants={reduceMotion ? undefined : rowVariants}
+              variants={principleVariants}
               className={cn(
                 "group relative grid grid-cols-[42px_minmax(0,1fr)] gap-x-5 gap-y-3 border-b border-transparent px-3 py-8 transition-colors duration-500 hover:bg-[#FBF9F3] sm:grid-cols-[52px_minmax(0,1fr)] sm:gap-x-7 sm:py-10 lg:grid-cols-[72px_minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-x-10 lg:py-12",
                 "-mx-3 sm:-mx-3"
@@ -200,7 +231,8 @@ along the way and the care taken with every detail.
 
             </motion.article>
           ))}
-        </div>
+
+        </motion.div>
 
       </div>
     </section>
