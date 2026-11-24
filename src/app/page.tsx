@@ -1,7 +1,6 @@
 // app/page.tsx
 
 import { Navigation } from "@/components/sections/Navigation";
-import { CTA } from "@/components/sections/CTA";
 import { Footer } from "@/components/sections/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { Projects } from "@/components/sections/Projects";
@@ -9,6 +8,7 @@ import { Reviews } from "@/components/sections/Reviews";
 import { Services } from "@/components/sections/Services";
 import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
 import { FAQ } from "@/components/sections/FAQ";
+import { FinalCTA } from "@/components/sections/CTA";
 
 export default function HomePage() {
   const structuredData = {
@@ -45,7 +45,7 @@ export default function HomePage() {
         <WhyChooseUs />
         <Reviews />
         <FAQ />
-        {/* <CTA /> */}
+        <FinalCTA />
       </main>
 
       <Footer />
