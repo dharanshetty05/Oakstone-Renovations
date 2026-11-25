@@ -4,8 +4,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { company } from "@/constants/company";
-import { layout } from "@/design/layout";
-import { cn } from "@/lib/utils";
 
 export function FinalCTA() {
   const shouldReduceMotion = useReducedMotion();
@@ -13,6 +11,8 @@ export function FinalCTA() {
   const emailHref = `mailto:${company.email}?subject=${encodeURIComponent(
     "Renovation enquiry"
   )}`;
+
+  const ease = [0.22, 1, 0.36, 1] as const;
 
   const reveal = {
     hidden: {
@@ -24,7 +24,7 @@ export function FinalCTA() {
       y: 0,
       transition: {
         duration: 0.7,
-        ease: [0.22, 1, 0.36, 1] as const,
+        ease,
       },
     },
   };
@@ -35,41 +35,59 @@ export function FinalCTA() {
       aria-labelledby="final-cta-heading"
       className="bg-[#F4F1E8] py-12 sm:py-16 lg:py-20"
     >
-      <div className={cn(layout.container, "px-5 sm:px-6")}>
+      {/* WIDER CONTAINER */}
+
+      <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10">
+
+        {/* CTA PANEL */}
+
         <div
           className="
             relative isolate
-            flex min-h-[440px]
+            flex min-h-[360px]
             items-center justify-center
             overflow-hidden
-            rounded-[20px] sm:rounded-[24px]
-            lg:rounded-[28px]
-            border border-[#193B2D]/[0.035]
-            bg-[#EAE9E2]
+            rounded-[20px]
+            border border-[#193B2D]/[0.045]
+            bg-[#E5EAE2]
             px-6 py-16
-            sm:min-h-[510px]
+            sm:min-h-[400px]
+            sm:rounded-[24px]
             sm:px-12 sm:py-20
-            lg:min-h-[600px]
+            lg:min-h-[460px]
+            lg:rounded-[28px]
             lg:px-20
           "
         >
-          {/* Background treatment */}
+          {/* BACKGROUND TREATMENT */}
+
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
           >
-            {/* Soft neutral gradient */}
+            {/* Soft sage gradient */}
+
             <div
               className="
                 absolute inset-0
                 bg-gradient-to-br
-                from-[#E5E3DC]
-                via-[#F0EEE8]
-                to-[#EAE9E3]
+                from-[#E1E8DF]
+                via-[#E9EDE5]
+                to-[#DDE6DC]
               "
             />
 
-            {/* Diagonal natural light */}
+            {/* Natural ambient light */}
+
+            <div
+              className="
+                absolute inset-0
+                bg-[radial-gradient(ellipse_at_50%_40%,rgba(255,255,255,0.65),transparent_65%)]
+              "
+            />
+
+            {/* Subtle diagonal light */}
+
             <motion.div
               initial={
                 shouldReduceMotion
@@ -88,27 +106,29 @@ export function FinalCTA() {
               }}
               className="
                 absolute
-                -top-[85%] left-[38%]
-                h-[260%] w-[24%]
+                -top-[90%] left-[38%]
+                h-[280%] w-[22%]
                 rotate-[35deg]
                 bg-gradient-to-r
                 from-transparent
-                via-white/45
+                via-white/35
                 to-transparent
                 blur-2xl
               "
             />
 
-            {/* Subtle warm ambient light */}
+            {/* Very subtle green depth */}
+
             <div
               className="
                 absolute inset-0
-                bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.18),transparent_70%)]
+                bg-[radial-gradient(ellipse_at_bottom_left,rgba(25,59,45,0.055),transparent_55%)]
               "
             />
           </div>
 
-          {/* Content */}
+          {/* CONTENT */}
+
           <motion.div
             initial={shouldReduceMotion ? false : "hidden"}
             whileInView="visible"
@@ -117,8 +137,8 @@ export function FinalCTA() {
               amount: 0.35,
             }}
             transition={{
-              staggerChildren: 0.13,
-              delayChildren: 0.08,
+              staggerChildren: shouldReduceMotion ? 0 : 0.13,
+              delayChildren: shouldReduceMotion ? 0 : 0.08,
             }}
             className="
               relative z-10
@@ -128,38 +148,42 @@ export function FinalCTA() {
               text-center
             "
           >
-            {/* Eyebrow */}
+
+            {/* EYEBROW */}
+
             <motion.div variants={reveal}>
               <span
                 className="
                   inline-flex items-center
                   rounded-full
-                  border border-[#193B2D]/[0.07]
-                  bg-[#F4F1E8]/90
+                  border border-[#193B2D]/[0.09]
+                  bg-[#F4F1E8]/80
                   px-3.5 py-1.5
                   font-[family-name:var(--font-inter)]
-                  text-[12px]
+                  text-[11px]
                   font-semibold
+                  tracking-[0.035em]
                   text-[#315D4D]
-                  shadow-[0_3px_7px_rgba(25,59,45,0.09)]
+                  shadow-[0_2px_8px_rgba(25,59,45,0.06)]
                   backdrop-blur-sm
                 "
               >
-                Project Enquiry
+                Your Next Chapter
               </span>
             </motion.div>
 
-            {/* Heading */}
+            {/* HEADING */}
+
             <motion.h2
               id="final-cta-heading"
               variants={reveal}
               className="
-                mt-8
+                mt-7
                 max-w-[760px]
                 font-[family-name:var(--font-manrope)]
-                text-[clamp(2.4rem,5.2vw,4.25rem)]
+                text-[clamp(2.35rem,5vw,4.1rem)]
                 font-bold
-                leading-[1.12]
+                leading-[1.1]
                 tracking-[-0.055em]
                 text-[#193B2D]
               "
@@ -167,24 +191,25 @@ export function FinalCTA() {
               Start Your Renovation
               <br />
 
-              <span className="italic font-semibold">
+              <span className="font-semibold italic">
                 Journey
               </span>{" "}
               Today
             </motion.h2>
 
-            {/* Description */}
+            {/* DESCRIPTION */}
+
             <motion.p
               variants={reveal}
               className="
                 mt-5
-                max-w-[600px]
+                max-w-[580px]
                 font-[family-name:var(--font-inter)]
                 text-[13px]
                 leading-[1.85]
                 tracking-[-0.015em]
-                text-[#555F55]
-                sm:text-[15px]
+                text-[#59665A]
+                sm:text-[14px]
               "
             >
               Ready to bring your renovation ideas to life?
@@ -192,7 +217,8 @@ export function FinalCTA() {
               step towards a space that feels just right.
             </motion.p>
 
-            {/* CTA Button */}
+            {/* CTA BUTTON */}
+
             <motion.div
               variants={reveal}
               className="mt-8"
@@ -232,7 +258,7 @@ export function FinalCTA() {
                   focus-visible:ring-2
                   focus-visible:ring-[#193B2D]
                   focus-visible:ring-offset-4
-                  focus-visible:ring-offset-[#EAE9E2]
+                  focus-visible:ring-offset-[#E5EAE2]
                 "
               >
                 <span>Discuss Your Project</span>
@@ -257,6 +283,7 @@ export function FinalCTA() {
                 </span>
               </motion.a>
             </motion.div>
+
           </motion.div>
         </div>
       </div>

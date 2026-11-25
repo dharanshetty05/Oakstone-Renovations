@@ -354,25 +354,6 @@ export function FAQ() {
           })}
 
         </motion.div>
-
-        {/* CLOSING NOTE */}
-
-        <motion.p
-          initial={reduceMotion ? false : "hidden"}
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
-          variants={answerVariants}
-          className="mt-10 text-center font-[family-name:var(--font-manrope)] text-[12px] leading-[1.8] text-[#686D64] sm:mt-12 sm:text-[13px]"
-        >
-          Have another question?{" "}
-          <a
-            href="#contact"
-            className="font-semibold text-[#193B2D] underline decoration-[#C18D76]/60 underline-offset-4 transition-colors duration-300 hover:text-[#A77D65]"
-          >
-            We'd be happy to hear from you.
-          </a>
-        </motion.p>
-
       </div>
     </section>
   );
