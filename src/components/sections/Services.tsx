@@ -184,8 +184,8 @@ export function Services() {
   variants={headingVariants}
   className={cn(
     typography.h2,
-    "w-full max-w-[900px]",
-    "!text-[clamp(1.9rem,4.2vw,3.75rem)]",
+    "w-full max-w-225",
+    "text-[clamp(1.9rem,4.2vw,3.75rem)]!",
     "text-[#242C26]",
     "leading-[1.08] tracking-[-0.045em]",
     "text-balance"
@@ -258,7 +258,7 @@ export function Services() {
               variants={textVariants}
               className={cn(
                 typography.sectionDescription,
-                "max-w-[440px] lg:pb-2",
+                "max-w-110 lg:pb-2",
                 "leading-[1.85] text-[#686D64]"
               )}
             >
